@@ -1,0 +1,11 @@
+<?php
+
+require_once __DIR__ . '/../core/Database.php';
+
+class CentroCosto {
+    public static function all() {
+        $conn = Database::connect();
+        $stmt = $conn->query("SELECT Id, NombreCentro FROM CentroCosto ORDER BY NombreCentro");
+        return $stmt->fetchAll();
+    }
+}
