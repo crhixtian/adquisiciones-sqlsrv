@@ -1,11 +1,13 @@
-<?php // vista para editar y agregar estudios de mercado de un catálogo ?>
+<?php // vista para editar y agregar estudios de mercado de un catálogo 
+?>
 <div class="col-12">
     <div class="card">
         <div class="card-header">
             <h3 class="card-title">Estudios de Mercado</h3>
             <div>
                 <span class="badge bg-blue-lt"><?= htmlspecialchars($catalogo['Tecnologia']) ?></span>
-                <?= htmlspecialchars($catalogo['NombreGenerico']) ?></div>
+                <?= htmlspecialchars($catalogo['NombreGenerico']) ?>
+            </div>
         </div>
         <div class="card-body">
             <h4>Estudios Registrados</h4>
@@ -29,14 +31,14 @@
                                     <a href="<?= htmlspecialchars($e['RutaDocumento']) ?>" target="_blank" class="btn btn-sm btn-outline-primary">Ver PDF</a>
                                 </td>
                                 <?php
-                                    $fecha = $e['FechaRegistro'] ?? null;
-                                    if ($fecha instanceof DateTime) {
-                                        $fechaText = date('d/m/Y', $fecha->getTimestamp());
-                                    } elseif ($fecha) {
-                                        $fechaText = date('d/m/Y', strtotime($fecha));
-                                    } else {
-                                        $fechaText = '';
-                                    }
+                                $fecha = $e['FechaRegistro'] ?? null;
+                                if ($fecha instanceof DateTime) {
+                                    $fechaText = date('d/m/Y', $fecha->getTimestamp());
+                                } elseif ($fecha) {
+                                    $fechaText = date('d/m/Y', strtotime($fecha));
+                                } else {
+                                    $fechaText = '';
+                                }
                                 ?>
                                 <td><?= $fechaText ?></td>
                                 <td class="text-end">

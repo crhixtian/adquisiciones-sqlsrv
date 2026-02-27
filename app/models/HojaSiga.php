@@ -3,10 +3,12 @@
 
 require_once __DIR__ . '/../core/Database.php';
 
-class HojaSiga {
+class HojaSiga
+{
 
     // retorna todas las hojas junto con información de costo
-    public static function all() {
+    public static function all()
+    {
         $conn = Database::connect();
         $stmt = $conn->query(
             "SELECT hs.Id, hs.NPedidoCompra, hs.Meta, hs.AnioFiscal, hs.FechaRegistro, cc.NombreCentro
@@ -18,7 +20,8 @@ class HojaSiga {
     }
 
     // busca una hoja específica con información de centro
-    public static function find($id) {
+    public static function find($id)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "SELECT hs.Id,
@@ -37,7 +40,8 @@ class HojaSiga {
     }
 
     // inserta una nueva hoja SIGA en la base de datos
-    public static function create($data) {
+    public static function create($data)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "INSERT INTO HojaSiga
@@ -55,7 +59,8 @@ class HojaSiga {
     }
 
     // elimina hoja y detalles vinculados en transacción
-    public static function delete($id) {
+    public static function delete($id)
+    {
         $conn = Database::connect();
         // remove detalles asociados antes de eliminar la hoja para evitar errores de FK
         try {
@@ -72,7 +77,8 @@ class HojaSiga {
     }
 
     // obtiene los detalles asociados a una hoja
-    public static function detalles($idHoja) {
+    public static function detalles($idHoja)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "SELECT dr.Id,

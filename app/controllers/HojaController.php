@@ -7,16 +7,19 @@ require_once __DIR__ . '/../models/CentroCosto.php';
 require_once __DIR__ . '/../models/Detalle.php';
 require_once __DIR__ . '/../models/CatalogoTecnologico.php';
 
-class HojaController extends Controller {
+class HojaController extends Controller
+{
     // muestra todas las hojas junto con los centros de costo disponibles
-    public function index() {
+    public function index()
+    {
         $hojas = HojaSiga::all();
         $centros = CentroCosto::all();
         $this->render('hojas/index', ['hojas' => $hojas, 'centros' => $centros]);
     }
 
     // crea una nueva hoja a partir de los datos POST
-    public function store() {
+    public function store()
+    {
         try {
             HojaSiga::create($_POST);
             $this->redirect('index.php?controller=hoja&action=index');
@@ -30,7 +33,8 @@ class HojaController extends Controller {
     }
 
     // visualiza una hoja específica con sus detalles
-    public function show() {
+    public function show()
+    {
         if (!isset($_GET['id'])) {
             die("Hoja no especificada.");
         }
@@ -45,7 +49,8 @@ class HojaController extends Controller {
     }
 
     // elimina una hoja identificada por id
-    public function delete() {
+    public function delete()
+    {
         if (!isset($_GET['id'])) {
             die("Hoja no especificada.");
         }

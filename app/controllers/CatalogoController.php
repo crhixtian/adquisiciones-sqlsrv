@@ -6,9 +6,11 @@ require_once __DIR__ . '/../models/CatalogoTecnologico.php';
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../models/EstudioMercado.php';
 
-class CatalogoController extends Controller {
+class CatalogoController extends Controller
+{
     // lista los registros del catálogo con conteo de estudios
-    public function index() {
+    public function index()
+    {
         // obtener años disponibles desde HojaSiga
         $conn = Database::connect();
         $stmtYears = $conn->query("SELECT DISTINCT AnioFiscal FROM HojaSiga ORDER BY AnioFiscal DESC");
@@ -39,7 +41,8 @@ class CatalogoController extends Controller {
     }
 
     // muestra formulario para editar estudios asociados a un catálogo
-    public function editEstudios() {
+    public function editEstudios()
+    {
         if (!isset($_GET['id'])) die("ID no válido.");
         $id = (int) $_GET['id'];
         $catalogo = CatalogoTecnologico::find($id);
@@ -53,7 +56,8 @@ class CatalogoController extends Controller {
     }
 
     // procesa carga de nuevo estudio de mercado (archivo PDF)
-    public function uploadEstudio() {
+    public function uploadEstudio()
+    {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $idCatalogo = (int) $_POST['IdCatalogoTec'];
             $marca = trim($_POST['Marca']);
@@ -87,7 +91,8 @@ class CatalogoController extends Controller {
     }
 
     // elimina un estudio y su documento físico si existe
-    public function deleteEstudio() {
+    public function deleteEstudio()
+    {
         if (!isset($_GET['eliminar']) || !isset($_GET['id'])) {
             die("Parámetros inválidos.");
         }

@@ -1,4 +1,5 @@
-<?php // vista de listado de hojas SIGA, incluye tabla y modales ?>
+<?php // vista de listado de hojas SIGA, incluye tabla y modales 
+?>
 <div class="col-12">
     <div class="card">
         <div class="card-header">
@@ -28,14 +29,14 @@
                                 <td><?= htmlspecialchars($row['Meta']) ?></td>
                                 <td><?= htmlspecialchars($row['AnioFiscal']) ?></td>
                                 <?php
-                                    $fechaRegistro = $row['FechaRegistro'] ?? null;
-                                    if ($fechaRegistro instanceof DateTime) {
-                                        $fechaText = date('d/m/Y', $fechaRegistro->getTimestamp());
-                                    } elseif ($fechaRegistro) {
-                                        $fechaText = date('d/m/Y', strtotime($fechaRegistro));
-                                    } else {
-                                        $fechaText = '';
-                                    }
+                                $fechaRegistro = $row['FechaRegistro'] ?? null;
+                                if ($fechaRegistro instanceof DateTime) {
+                                    $fechaText = date('d/m/Y', $fechaRegistro->getTimestamp());
+                                } elseif ($fechaRegistro) {
+                                    $fechaText = date('d/m/Y', strtotime($fechaRegistro));
+                                } else {
+                                    $fechaText = '';
+                                }
                                 ?>
                                 <td><?= $fechaText ?></td>
                                 <td class="text-end">

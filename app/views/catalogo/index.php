@@ -1,4 +1,5 @@
-<?php // vista que muestra códigos SIGA consolidados y filtro por año ?>
+<?php // vista que muestra códigos SIGA consolidados y filtro por año 
+?>
 <div class="col-12">
     <div class="card shadow-sm">
         <div class="card-header d-flex justify-content-between align-items-center">

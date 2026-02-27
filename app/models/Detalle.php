@@ -3,9 +3,11 @@
 
 require_once __DIR__ . '/../core/Database.php';
 
-class Detalle {
+class Detalle
+{
     // obtiene todos los detalles asociados a una hoja
-    public static function getByHoja($idHoja) {
+    public static function getByHoja($idHoja)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "SELECT dr.*, ct.NombreGenerico
@@ -19,7 +21,8 @@ class Detalle {
     }
 
     // busca un detalle específico por id
-    public static function find($id) {
+    public static function find($id)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare("SELECT * FROM DetalleRequerimiento WHERE Id = ?");
         $stmt->execute([$id]);
@@ -27,7 +30,8 @@ class Detalle {
     }
 
     // inserta un nuevo detalle en la base de datos
-    public static function create($data) {
+    public static function create($data)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "INSERT INTO DetalleRequerimiento
@@ -46,7 +50,8 @@ class Detalle {
     }
 
     // actualiza un detalle existente con nuevos datos
-    public static function update($id, $data) {
+    public static function update($id, $data)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "UPDATE DetalleRequerimiento
@@ -70,14 +75,16 @@ class Detalle {
     }
 
     // elimina un detalle por su id
-    public static function delete($id) {
+    public static function delete($id)
+    {
         $conn = Database::connect();
         $stmt = $conn->prepare("DELETE FROM DetalleRequerimiento WHERE Id = ?");
         $stmt->execute([$id]);
     }
 
     // verifica la existencia de un código SIGA en una hoja, opcionalmente excluyendo un id
-    public static function existsCodigoEnHoja($idHoja, $codigo, $excludeId = null) {
+    public static function existsCodigoEnHoja($idHoja, $codigo, $excludeId = null)
+    {
         $conn = Database::connect();
         if ($excludeId) {
             $stmt = $conn->prepare(
