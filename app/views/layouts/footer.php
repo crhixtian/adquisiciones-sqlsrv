@@ -1,3 +1,4 @@
+<?php // pie de página que cierra contenedores y carga scripts ?>
         </div> <!-- container -->
     </div> <!-- page-body -->
 </div> <!-- page -->

@@ -1,9 +1,11 @@
 <?php
+// modelo de hoja SIGA con operaciones CRUD y utilitarios
 
 require_once __DIR__ . '/../core/Database.php';
 
 class HojaSiga {
 
+    // retorna todas las hojas junto con información de costo
     public static function all() {
         $conn = Database::connect();
         $stmt = $conn->query(
@@ -15,6 +17,7 @@ class HojaSiga {
         return $stmt->fetchAll();
     }
 
+    // busca una hoja específica con información de centro
     public static function find($id) {
         $conn = Database::connect();
         $stmt = $conn->prepare(
@@ -33,6 +36,7 @@ class HojaSiga {
         return $stmt->fetch();
     }
 
+    // inserta una nueva hoja SIGA en la base de datos
     public static function create($data) {
         $conn = Database::connect();
         $stmt = $conn->prepare(
@@ -50,6 +54,7 @@ class HojaSiga {
         return $conn->lastInsertId();
     }
 
+    // elimina hoja y detalles vinculados en transacción
     public static function delete($id) {
         $conn = Database::connect();
         // remove detalles asociados antes de eliminar la hoja para evitar errores de FK
@@ -66,6 +71,7 @@ class HojaSiga {
         }
     }
 
+    // obtiene los detalles asociados a una hoja
     public static function detalles($idHoja) {
         $conn = Database::connect();
         $stmt = $conn->prepare(

@@ -1,3 +1,4 @@
+<?php // vista de listado de hojas SIGA, incluye tabla y modales ?>
 <div class="col-12">
     <div class="card">
         <div class="card-header">

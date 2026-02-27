@@ -1,3 +1,4 @@
+<?php // vista para editar y agregar estudios de mercado de un catálogo ?>
 <div class="col-12">
     <div class="card">
         <div class="card-header">

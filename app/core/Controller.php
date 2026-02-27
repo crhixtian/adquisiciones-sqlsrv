@@ -1,4 +1,5 @@
 <?php
+// clase base para controladores con helpers de renderizado y redirección
 
 class Controller {
     /**

@@ -1,3 +1,4 @@
+<?php // cabecera HTML común a todas las vistas, carga assets y menú ?>
 <!DOCTYPE html>
 <html lang="es">
 <head>

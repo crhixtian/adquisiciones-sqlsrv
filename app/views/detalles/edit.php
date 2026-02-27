@@ -1,3 +1,4 @@
+<?php // vista de formulario para editar un ítem de detalle ?>
 <div class="col-12">
     <div class="card">
         <div class="card-header">

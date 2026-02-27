@@ -1,4 +1,5 @@
 <?php
+// envoltorio ligero para manejar conexiones SQLSRV y simplificar consultas
 class SqlsrvException extends \Exception {}
 
 class SqlsrvStatement {

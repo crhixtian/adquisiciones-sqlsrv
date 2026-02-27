@@ -1,4 +1,5 @@
 <?php
+// controlador para gestionar catálogos tecnológicos y estudios de mercado
 
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../models/CatalogoTecnologico.php';
@@ -6,6 +7,7 @@ require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ . '/../models/EstudioMercado.php';
 
 class CatalogoController extends Controller {
+    // lista los registros del catálogo con conteo de estudios
     public function index() {
         // obtener años disponibles desde HojaSiga
         $conn = Database::connect();
@@ -36,6 +38,7 @@ class CatalogoController extends Controller {
         $this->render('catalogo/index', ['registros' => $registros, 'years' => $years, 'selectedYear' => $selectedYear]);
     }
 
+    // muestra formulario para editar estudios asociados a un catálogo
     public function editEstudios() {
         if (!isset($_GET['id'])) die("ID no válido.");
         $id = (int) $_GET['id'];
@@ -49,6 +52,7 @@ class CatalogoController extends Controller {
         ]);
     }
 
+    // procesa carga de nuevo estudio de mercado (archivo PDF)
     public function uploadEstudio() {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $idCatalogo = (int) $_POST['IdCatalogoTec'];
@@ -82,6 +86,7 @@ class CatalogoController extends Controller {
         }
     }
 
+    // elimina un estudio y su documento físico si existe
     public function deleteEstudio() {
         if (!isset($_GET['eliminar']) || !isset($_GET['id'])) {
             die("Parámetros inválidos.");
