@@ -3,7 +3,7 @@
 <div class="col-12">
     <div class="card mb-3">
         <div class="card-header">
-            <h3 class="card-title">Hoja SIGA: <?= htmlspecialchars($hoja['NPedidoCompra']) ?></h3>
+            <h3 class="card-title">Pedido de Compra: <?= htmlspecialchars($hoja['NPedidoCompra']) ?></h3>
         </div>
         <div class="card-body">
             <strong>Centro:</strong> <?= htmlspecialchars($hoja['NombreCentro']) ?><br>
@@ -17,7 +17,7 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Agregar Ítem - Hoja <?= htmlspecialchars($hoja['NPedidoCompra']) ?></h5>
+                    <h5 class="modal-title">Agregar Ítem - Pedido de Compra <?= htmlspecialchars($hoja['NPedidoCompra']) ?></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form method="post" action="index.php?controller=detalle&action=store">

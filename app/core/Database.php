@@ -100,20 +100,20 @@ class Database {
 
     public static function connect() {
         if (self::$instance === null) {
-            $server   = "localhost";
+            $server   = "34.31.255.131";
             $database = "AdquisicionesPech";
-            $username = "";
-            $password = "";
+            $username = "sqlserver";
+            $password = "Pech206..";
 
             $params = [
                 "Database" => $database,
-                "TrustServerCertificate" => true,
-            ];
-
-            $conn = sqlsrv_connect($server, $params + [
                 'UID' => $username,
                 'PWD' => $password,
-            ]);
+                "TrustServerCertificate" => true,
+                "CharacterSet" => "UTF-8",
+            ];
+
+            $conn = sqlsrv_connect($server, $params);
 
             if ($conn === false) {
                 $errors = sqlsrv_errors(SQLSRV_ERR_ERRORS);

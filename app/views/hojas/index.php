@@ -3,17 +3,17 @@
 <div class="col-12">
     <div class="card">
         <div class="card-header">
-            <h3 class="card-title">Lista de Hojas SIGA</h3>
+            <h3 class="card-title">Lista de Pedidos de Compra</h3>
             <div class="card-actions">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createHojaModal">+ Nueva Hoja</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createHojaModal">+ Nuevo</button>
             </div>
         </div>
         <div class="table-responsive">
             <table class="table table-vcenter table-hover card-table">
                 <thead>
                     <tr>
-                        <th>Pedido</th>
-                        <th>Centro de Costo</th>
+                        <th>Nro. de Pedido</th>
+                        <th>Dirección Solicitante</th>
                         <th>Meta</th>
                         <th>Año</th>
                         <th>Fecha Registro</th>
@@ -84,13 +84,13 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Nueva Hoja SIGA</h5>
+                <h5 class="modal-title">Nuevo Pedido de Compra</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form method="post" action="index.php?controller=hoja&action=store">
                 <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label">Centro de Costo</label>
+                        <label class="form-label">Dirección Solicitante</label>
                         <select name="IdCentroCosto" class="form-select" required>
                             <option value=""></option>
                             <?php foreach ($centros as $cc): ?>
@@ -107,7 +107,7 @@
                         <input type="text" name="Meta" class="form-control" required>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label">Año Fiscal</label>
+                        <label class="form-label">Año</label>
                         <input type="number" name="AnioFiscal" class="form-control" required>
                     </div>
                 </div>

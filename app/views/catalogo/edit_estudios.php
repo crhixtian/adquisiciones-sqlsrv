@@ -2,15 +2,17 @@
 ?>
 <div class="col-12">
     <div class="card">
-        <div class="card-header">
-            <h3 class="card-title">Estudios de Mercado</h3>
-            <div>
-                <span class="badge bg-blue-lt"><?= htmlspecialchars($catalogo['Tecnologia']) ?></span>
+        <div class="card-header d-flex flex-column align-items-start">
+            <h3 class="card-title">Fichas Técnicas</h3>
+            <div class="mt-2">
+                <span class="badge bg-blue-lt">
+                    <?= htmlspecialchars($catalogo['Tecnologia']) ?>
+                </span>
                 <?= htmlspecialchars($catalogo['NombreGenerico']) ?>
             </div>
         </div>
         <div class="card-body">
-            <h4>Estudios Registrados</h4>
+            <h4>Fichas Tecnicas Registradas</h4>
             <table class="table table-hover">
                 <thead>
                     <tr>
@@ -54,7 +56,7 @@
                 </tbody>
             </table>
             <hr>
-            <h4>Agregar Nuevo Estudio</h4>
+            <h4>Agregar Nuevo Ficha Técnica</h4>
             <form method="POST" action="index.php?controller=catalogo&action=uploadEstudio" enctype="multipart/form-data">
                 <input type="hidden" name="IdCatalogoTec" value="<?= $catalogo['Id'] ?>">
                 <div class="row">
@@ -73,7 +75,7 @@
                 </div>
                 <div class="mt-3 text-end">
                     <a href="index.php?controller=catalogo&action=index" class="btn btn-secondary">Volver</a>
-                    <button type="submit" class="btn btn-primary">Guardar Estudio</button>
+                    <button type="submit" class="btn btn-primary">Guardar Documento</button>
                 </div>
             </form>
         </div>
