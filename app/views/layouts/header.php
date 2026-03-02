@@ -26,6 +26,9 @@
                                 <li class="nav-item">
                                     <a class="nav-link" href="index.php?controller=catalogo&action=index">Codigos</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="index.php?controller=consolidado&action=index">Consolidado</a>
+                                </li>
                             </ul>
                         </div>
                     </div>
