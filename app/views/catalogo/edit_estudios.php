@@ -30,7 +30,7 @@
                                 <td><?= htmlspecialchars($e['Marca']) ?></td>
                                 <td><?= htmlspecialchars($e['Modelo']) ?></td>
                                 <td>
-                                    <a href="<?= htmlspecialchars($e['RutaDocumento']) ?>" target="_blank" class="btn btn-sm btn-outline-primary">Ver PDF</a>
+                                    <button type="button" class="btn btn-sm btn-outline-primary view-pdf-btn" data-url="<?= htmlspecialchars($e['RutaDocumento']) ?>">Ver PDF</button>
                                 </td>
                                 <?php
                                 $fecha = $e['FechaRegistro'] ?? null;
@@ -55,6 +55,15 @@
                     <?php endif; ?>
                 </tbody>
             </table>
+            <div id="pdf-viewer-container" class="mt-3" style="display:none;">
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <h5 class="m-0">Visor de PDF</h5>
+                    <button type="button" id="close-pdf-viewer" class="btn btn-sm btn-outline-secondary">Cerrar</button>
+                </div>
+                <div style="width:100%;height:600px;">
+                    <iframe id="pdf-viewer" src="" style="width:100%;height:100%;border:1px solid #ddd;" frameborder="0"></iframe>
+                </div>
+            </div>
             <hr>
             <h4>Agregar Nuevo Ficha Técnica</h4>
             <form method="POST" action="index.php?controller=catalogo&action=uploadEstudio" enctype="multipart/form-data">
@@ -81,3 +90,23 @@
         </div>
     </div>
 </div>
+        <script>
+        document.addEventListener('click', function(e){
+            var btn = e.target.closest && e.target.closest('.view-pdf-btn');
+            if(btn){
+                var url = btn.getAttribute('data-url');
+                if(!url) return;
+                var container = document.getElementById('pdf-viewer-container');
+                var iframe = document.getElementById('pdf-viewer');
+                iframe.src = url;
+                container.style.display = 'block';
+                iframe.scrollIntoView({behavior:'smooth'});
+            }
+            if(e.target && e.target.id === 'close-pdf-viewer'){
+                var container = document.getElementById('pdf-viewer-container');
+                var iframe = document.getElementById('pdf-viewer');
+                iframe.src = '';
+                container.style.display = 'none';
+            }
+        });
+        </script>
