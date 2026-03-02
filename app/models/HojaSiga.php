@@ -11,7 +11,7 @@ class HojaSiga
     {
         $conn = Database::connect();
         $stmt = $conn->query(
-            "SELECT hs.Id, hs.NPedidoCompra, hs.Meta, hs.AnioFiscal, hs.FechaRegistro, cc.NombreCentro
+            "SELECT hs.Id, hs.NPedidoCompra, hs.Meta, hs.AnioFiscal, hs.FechaRegistro, hs.Estado, cc.NombreCentro
              FROM HojaSiga hs
              INNER JOIN CentroCosto cc ON hs.IdCentroCosto = cc.Id
              ORDER BY cc.NombreCentro, hs.NPedidoCompra ASC"
@@ -29,6 +29,7 @@ class HojaSiga
                     hs.Meta,
                     hs.AnioFiscal,
                     hs.FechaRegistro,
+                    hs.Estado,
                     cc.NombreCentro,
                     hs.IdCentroCosto
              FROM HojaSiga hs
@@ -95,5 +96,13 @@ class HojaSiga
         );
         $stmt->execute([$idHoja]);
         return $stmt->fetchAll();
+    }
+
+    // actualiza el estado de la hoja (0=incompleto, 1=completo)
+    public static function updateEstado($id, $estado)
+    {
+        $conn = Database::connect();
+        $stmt = $conn->prepare("UPDATE HojaSiga SET Estado = ? WHERE Id = ?");
+        $stmt->execute([(int)$estado, $id]);
     }
 }

@@ -14,9 +14,8 @@
                     <tr>
                         <th>Nro. de Pedido</th>
                         <th>Dirección Solicitante</th>
-                        <th>Meta</th>
                         <th>Año</th>
-                        <th>Fecha Registro</th>
+                        <th>Estado</th>
                         <th class="text-end">Acciones</th>
                     </tr>
                 </thead>
@@ -26,19 +25,14 @@
                             <tr>
                                 <td><?= htmlspecialchars($row['NPedidoCompra']) ?></td>
                                 <td><?= htmlspecialchars($row['NombreCentro']) ?></td>
-                                <td><?= htmlspecialchars($row['Meta']) ?></td>
                                 <td><?= htmlspecialchars($row['AnioFiscal']) ?></td>
-                                <?php
-                                $fechaRegistro = $row['FechaRegistro'] ?? null;
-                                if ($fechaRegistro instanceof DateTime) {
-                                    $fechaText = date('d/m/Y', $fechaRegistro->getTimestamp());
-                                } elseif ($fechaRegistro) {
-                                    $fechaText = date('d/m/Y', strtotime($fechaRegistro));
-                                } else {
-                                    $fechaText = '';
-                                }
-                                ?>
-                                <td><?= $fechaText ?></td>
+                                <td>
+                                    <?php if ((int)($row['Estado'] ?? 0) === 1): ?>
+                                        <span class="badge bg-green text-white">Completo</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-yellow text-dark">Incompleto</span>
+                                    <?php endif; ?>
+                                </td>
                                 <td class="text-end">
                                     <a href="index.php?controller=hoja&action=show&id=<?= $row['Id'] ?>" class="btn btn-sm btn-outline-primary">
                                         Ver
@@ -70,7 +64,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="6" class="text-center text-muted">No hay hojas registradas.</td>
+                            <td colspan="5" class="text-center text-muted">No hay hojas registradas.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
