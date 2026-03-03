@@ -15,6 +15,18 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
+                        <div class="card-header">
+                            <form method="GET" class="d-flex align-items-center">
+                                <input type="hidden" name="controller" value="consolidado">
+                                <input type="hidden" name="action" value="index">
+                                <label for="year" class="me-2 mb-0">Año:</label>
+                                <select id="year" name="year" class="form-select form-select-sm" style="width:120px;" onchange="this.form.submit()">
+                                    <?php foreach ($years as $y): ?>
+                                        <option value="<?= (int)$y ?>" <?= ((int)$selectedYear === (int)$y) ? 'selected' : '' ?>><?= (int)$y ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </form>
+                        </div>
                         <div class="table-responsive">
                             <table class="table table-vcenter card-table">
                                 <thead>

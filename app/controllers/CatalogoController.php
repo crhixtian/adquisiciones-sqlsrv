@@ -49,9 +49,23 @@ class CatalogoController extends Controller
         if (!$catalogo) die("Catálogo no encontrado.");
 
         $estudios = EstudioMercado::getByCatalogo($id);
+        $years = CatalogoTecnologico::pedidosCompraYearsByCatalogo($id);
+
+        $selectedYear = null;
+        if (isset($_GET['year']) && $_GET['year'] !== 'all' && $_GET['year'] !== '') {
+            $selectedYear = (int) $_GET['year'];
+            if (!in_array($selectedYear, $years, true)) {
+                $selectedYear = null;
+            }
+        }
+
+        $pedidosCompra = CatalogoTecnologico::pedidosCompraByCatalogo($id, $selectedYear);
         $this->render('catalogo/edit_estudios', [
             'catalogo' => $catalogo,
-            'estudios' => $estudios
+            'estudios' => $estudios,
+            'pedidosCompra' => $pedidosCompra,
+            'years' => $years,
+            'selectedYear' => $selectedYear
         ]);
     }
 

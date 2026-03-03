@@ -12,6 +12,48 @@
             </div>
         </div>
         <div class="card-body">
+            <h4>Pedidos de Compra donde aparece</h4>
+            <form method="get" action="index.php" class="d-flex align-items-center mb-3">
+                <input type="hidden" name="controller" value="catalogo">
+                <input type="hidden" name="action" value="editEstudios">
+                <input type="hidden" name="id" value="<?= (int)$catalogo['Id'] ?>">
+                <label class="me-2 mb-0">Año:</label>
+                <select name="year" class="form-select form-select-sm me-2" style="width:120px;" onchange="this.form.submit()">
+                    <option value="all" <?= $selectedYear === null ? 'selected' : '' ?>>Todos</option>
+                    <?php if (!empty($years)): ?>
+                        <?php foreach ($years as $y): ?>
+                            <option value="<?= (int)$y ?>" <?= ($selectedYear === (int)$y) ? 'selected' : '' ?>><?= (int)$y ?></option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </select>
+                <noscript><button class="btn btn-sm btn-primary">Filtrar</button></noscript>
+            </form>
+
+            <?php if (!empty($pedidosCompra)): ?>
+                <div class="table-responsive mb-3">
+                    <table class="table table-sm table-vcenter">
+                        <thead>
+                            <tr>
+                                <th>Nro. de Pedido</th>
+                                <th>Dirección Solicitante</th>
+                                <th>Año</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($pedidosCompra as $pedido): ?>
+                                <tr>
+                                    <td><?= htmlspecialchars($pedido['NPedidoCompra']) ?></td>
+                                    <td><?= htmlspecialchars($pedido['NombreCentro']) ?></td>
+                                    <td><?= htmlspecialchars($pedido['AnioFiscal']) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <p class="text-muted mb-3">Este código no aparece en ningún pedido de compra.</p>
+            <?php endif; ?>
+
             <h4>Fichas Tecnicas Registradas</h4>
             <table class="table table-hover">
                 <thead>

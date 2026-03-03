@@ -11,6 +11,23 @@ class ConsolidadoController extends Controller
     {
         $conn = Database::connect();
 
+        // obtener años fiscales disponibles y seleccionar el más reciente por defecto
+        $stmtYears = $conn->query("SELECT DISTINCT AnioFiscal FROM HojaSiga ORDER BY AnioFiscal DESC");
+        $rowsYears = $stmtYears->fetchAll();
+        $years = array_map('intval', array_column($rowsYears, 'AnioFiscal'));
+
+        $selectedYear = null;
+        if (!empty($years)) {
+            $selectedYear = (int) $years[0];
+        }
+
+        if (isset($_GET['year']) && $_GET['year'] !== '') {
+            $requestedYear = (int) $_GET['year'];
+            if (in_array($requestedYear, $years, true)) {
+                $selectedYear = $requestedYear;
+            }
+        }
+
         // obtener todos los equipos y sus cantidades agrupadas por centro de costo
         $sql = "
             SELECT 
@@ -24,12 +41,24 @@ class ConsolidadoController extends Controller
             INNER JOIN HojaSiga hs ON dr.IdHojaSiga = hs.Id
             INNER JOIN CentroCosto cc ON hs.IdCentroCosto = cc.Id
             INNER JOIN CatalogoTecnologico ct ON dr.IdCatalogoTec = ct.Id
+        ";
+
+        if ($selectedYear !== null) {
+            $sql .= " WHERE hs.AnioFiscal = ? ";
+        }
+
+        $sql .= "
             GROUP BY ct.Id, ct.NombreGenerico, cc.Id, cc.NombreCentro, cc.Siglas
             ORDER BY ct.NombreGenerico, cc.NombreCentro
         ";
 
-        $stmt = $conn->query($sql);
-        $datos = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $conn->prepare($sql);
+        if ($selectedYear !== null) {
+            $stmt->execute([$selectedYear]);
+        } else {
+            $stmt->execute();
+        }
+        $datos = $stmt->fetchAll();
 
         // procesar datos para crear matriz pivote
         $equipos = [];
@@ -56,13 +85,13 @@ class ConsolidadoController extends Controller
 
         sort($centrosCosto);
 
-        sort($centrosCosto);
-
         $this->render('consolidado/index', [
             'equipos' => $equipos,
             'centrosCosto' => $centrosCosto,
             'centrosSiglas' => $centrosSiglas,
-            'datos' => $datos
+            'datos' => $datos,
+            'years' => $years,
+            'selectedYear' => $selectedYear
         ]);
     }
 }

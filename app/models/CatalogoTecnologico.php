@@ -67,4 +67,50 @@ class CatalogoTecnologico
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
+
+    // obtiene los pedidos de compra en los que aparece un catálogo
+    public static function pedidosCompraByCatalogo($idCatalogo, $year = null)
+    {
+        $conn = Database::connect();
+        $sql = "SELECT DISTINCT
+                    hs.Id,
+                    hs.NPedidoCompra,
+                    hs.AnioFiscal,
+                    cc.NombreCentro
+             FROM DetalleRequerimiento dr
+             INNER JOIN HojaSiga hs
+                ON dr.IdHojaSiga = hs.Id
+             INNER JOIN CentroCosto cc
+                ON hs.IdCentroCosto = cc.Id
+             WHERE dr.IdCatalogoTec = ?";
+
+        $params = [$idCatalogo];
+        if ($year !== null) {
+            $sql .= " AND hs.AnioFiscal = ?";
+            $params[] = $year;
+        }
+
+        $sql .= " ORDER BY hs.AnioFiscal DESC, hs.NPedidoCompra ASC";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // obtiene años fiscales disponibles para pedidos de un catálogo
+    public static function pedidosCompraYearsByCatalogo($idCatalogo)
+    {
+        $conn = Database::connect();
+        $stmt = $conn->prepare(
+            "SELECT DISTINCT hs.AnioFiscal
+             FROM DetalleRequerimiento dr
+             INNER JOIN HojaSiga hs
+                ON dr.IdHojaSiga = hs.Id
+             WHERE dr.IdCatalogoTec = ?
+             ORDER BY hs.AnioFiscal DESC"
+        );
+        $stmt->execute([$idCatalogo]);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return array_map('intval', array_column($rows, 'AnioFiscal'));
+    }
 }
