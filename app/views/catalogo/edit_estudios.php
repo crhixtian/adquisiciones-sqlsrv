@@ -1,4 +1,4 @@
-<?php // vista para editar y agregar estudios de mercado de un catálogo 
+<?php // vista para editar y agregar fichas técnicas (PDF) de una tecnnoligía
 ?>
 <div class="col-12">
     <div class="card">

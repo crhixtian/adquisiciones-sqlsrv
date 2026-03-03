@@ -1,5 +1,5 @@
 <?php
-// controlador responsable de crear, editar y eliminar detalles dentro de una hoja
+// controlador responsable de crear, editar y eliminar items dentro de una hoja SIGA
 
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../models/Detalle.php';
@@ -7,9 +7,7 @@ require_once __DIR__ . '/../models/CatalogoTecnologico.php';
 
 class DetalleController extends Controller
 {
-    // create() removed: form is now a modal inside hojas/show.php
-
-    // guarda un nuevo detalle dentro de una hoja
+    // guarda un nuevo item dentro de una hoja SIGA
     public function store()
     {
         $data = $_POST;
@@ -20,7 +18,7 @@ class DetalleController extends Controller
         $this->redirect('index.php?controller=hoja&action=show&id=' . $data['IdHojaSiga']);
     }
 
-    // muestra el formulario de edición para un detalle existente
+    // muestra el formulario de edición para un item existente
     public function edit()
     {
         if (!isset($_GET['id'])) die("Ítem no especificado.");
@@ -31,12 +29,12 @@ class DetalleController extends Controller
         $this->render('detalles/edit', ['detalle' => $detalle, 'catalogos' => $catalogos]);
     }
 
-    // actualiza un detalle ya existente
+    // actualiza un item ya existente
     public function update()
     {
         $id = $_POST['Id'];
         $data = $_POST;
-        // validate uniqueness
+
         if (Detalle::existsCodigoEnHoja($data['IdHojaSiga'], $data['CodigoSiga'], $id)) {
             die("El Código SIGA '{$data['CodigoSiga']}' ya existe en esta hoja.");
         }
@@ -44,7 +42,7 @@ class DetalleController extends Controller
         $this->redirect('index.php?controller=hoja&action=show&id=' . $data['IdHojaSiga']);
     }
 
-    // elimina un detalle de una hoja
+    // elimina un item de una hoja SIGA
     public function delete()
     {
         if (!isset($_GET['id'])) die("Ítem no especificado.");

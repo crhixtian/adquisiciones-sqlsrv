@@ -5,7 +5,7 @@ require_once __DIR__ . '/../core/Database.php';
 
 class Detalle
 {
-    // obtiene todos los detalles asociados a una hoja
+    // obtiene todos los items asociados a una hoja
     public static function getByHoja($idHoja)
     {
         $conn = Database::connect();
@@ -20,7 +20,7 @@ class Detalle
         return $stmt->fetchAll();
     }
 
-    // busca un detalle específico por id
+    // busca un item específico por id
     public static function find($id)
     {
         $conn = Database::connect();
@@ -29,7 +29,7 @@ class Detalle
         return $stmt->fetch();
     }
 
-    // inserta un nuevo detalle en la base de datos
+    // inserta un nuevo item en la base de datos
     public static function create($data)
     {
         $conn = Database::connect();
@@ -49,7 +49,7 @@ class Detalle
         ]);
     }
 
-    // actualiza un detalle existente con nuevos datos
+    // actualiza un item existente con nuevos datos
     public static function update($id, $data)
     {
         $conn = Database::connect();
@@ -74,7 +74,7 @@ class Detalle
         ]);
     }
 
-    // elimina un detalle por su id
+    // elimina un item por su id
     public static function delete($id)
     {
         $conn = Database::connect();

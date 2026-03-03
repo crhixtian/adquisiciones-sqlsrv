@@ -5,7 +5,7 @@ require_once __DIR__ . '/../core/Database.php';
 
 class CatalogoTecnologico
 {
-    // devuelve todos los catálogos activos ordenados
+    // devuelve todas las tecnologías activas ordenadas
     public static function allActive()
     {
         $conn = Database::connect();
@@ -18,7 +18,7 @@ class CatalogoTecnologico
         return $stmt->fetchAll();
     }
 
-    // obtiene registros junto con conteo de estudios para un año opcional
+    // obtiene registros junto con conteo de fichas tecnicas (PDF) para un año
     public static function withEstudiosCount($year = null)
     {
         $conn = Database::connect();
@@ -59,7 +59,7 @@ class CatalogoTecnologico
         return $stmt->fetchAll();
     }
 
-    // busca un catálogo por su id
+    // busca una tecnologia por su id
     public static function find($id)
     {
         $conn = Database::connect();
@@ -68,7 +68,7 @@ class CatalogoTecnologico
         return $stmt->fetch();
     }
 
-    // obtiene los pedidos de compra en los que aparece un catálogo
+    // obtiene los pedidos de compra en los que aparece una tecnologia
     public static function pedidosCompraByCatalogo($idCatalogo, $year = null)
     {
         $conn = Database::connect();
@@ -97,7 +97,7 @@ class CatalogoTecnologico
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    // obtiene años fiscales disponibles para pedidos de un catálogo
+    // obtiene años disponibles para pedidos de una tecnologia 
     public static function pedidosCompraYearsByCatalogo($idCatalogo)
     {
         $conn = Database::connect();

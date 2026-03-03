@@ -6,7 +6,7 @@ require_once __DIR__ . '/../core/Database.php';
 class HojaSiga
 {
 
-    // retorna todas las hojas junto con información de costo
+    // retorna todas las hojas junto con información de centro de costo
     public static function all()
     {
         $conn = Database::connect();
@@ -19,7 +19,7 @@ class HojaSiga
         return $stmt->fetchAll();
     }
 
-    // busca una hoja específica con información de centro
+    // busca una hoja específica con información de centro de costo
     public static function find($id)
     {
         $conn = Database::connect();
@@ -63,7 +63,7 @@ class HojaSiga
     public static function delete($id)
     {
         $conn = Database::connect();
-        // remove detalles asociados antes de eliminar la hoja para evitar errores de FK
+        // remove items asociados antes de eliminar la hoja para evitar errores de FK
         try {
             $conn->beginTransaction();
             $stmt = $conn->prepare("DELETE FROM DetalleRequerimiento WHERE IdHojaSiga = ?");
@@ -77,7 +77,7 @@ class HojaSiga
         }
     }
 
-    // obtiene los detalles asociados a una hoja
+    // obtiene los items asociados a una hoja
     public static function detalles($idHoja)
     {
         $conn = Database::connect();

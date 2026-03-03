@@ -1,5 +1,5 @@
 <?php
-// controlador para gestionar catálogos tecnológicos y estudios de mercado
+// controlador para gestionar tecnologias(T1, T2, T3, ...) y fichas tecnicas (PDF)
 
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../models/CatalogoTecnologico.php';
@@ -8,10 +8,10 @@ require_once __DIR__ . '/../models/EstudioMercado.php';
 
 class CatalogoController extends Controller
 {
-    // lista los registros del catálogo con conteo de estudios
+    // lista los registros de tecnologias con conteo de fichas tecnicas (PDF)
     public function index()
     {
-        // obtener años disponibles desde HojaSiga
+        // obtener años desde HojaSiga
         $conn = Database::connect();
         $stmtYears = $conn->query("SELECT DISTINCT AnioFiscal FROM HojaSiga ORDER BY AnioFiscal DESC");
         $rows = $stmtYears->fetchAll();
@@ -30,7 +30,7 @@ class CatalogoController extends Controller
                 $selectedYear = (int) ($years[0] ?? $selectedYear);
             }
         } else {
-            // si no se pidió año, tomar primero de la lista si existe
+            // si no se pidió año, tomar primero de la lista
             if (!empty($years)) {
                 $selectedYear = (int) $years[0];
             }
@@ -40,7 +40,7 @@ class CatalogoController extends Controller
         $this->render('catalogo/index', ['registros' => $registros, 'years' => $years, 'selectedYear' => $selectedYear]);
     }
 
-    // muestra formulario para editar estudios asociados a un catálogo
+    // muestra formulario para editar fichas tecnicas (PDF) de un registro de tecnologia
     public function editEstudios()
     {
         if (!isset($_GET['id'])) die("ID no válido.");
@@ -69,7 +69,7 @@ class CatalogoController extends Controller
         ]);
     }
 
-    // procesa carga de nuevo estudio de mercado (archivo PDF)
+    // procesa carga de nuevo archivo PDF
     public function uploadEstudio()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -104,7 +104,7 @@ class CatalogoController extends Controller
         }
     }
 
-    // elimina un estudio y su documento físico si existe
+    // elimina un item y su documento físico si existe (PDF)
     public function deleteEstudio()
     {
         if (!isset($_GET['eliminar']) || !isset($_GET['id'])) {

@@ -11,7 +11,7 @@ class ConsolidadoController extends Controller
     {
         $conn = Database::connect();
 
-        // obtener años fiscales disponibles y seleccionar el más reciente por defecto
+        // obtener años disponibles y seleccionar el más reciente por defecto
         $stmtYears = $conn->query("SELECT DISTINCT AnioFiscal FROM HojaSiga ORDER BY AnioFiscal DESC");
         $rowsYears = $stmtYears->fetchAll();
         $years = array_map('intval', array_column($rowsYears, 'AnioFiscal'));
@@ -60,7 +60,7 @@ class ConsolidadoController extends Controller
         }
         $datos = $stmt->fetchAll();
 
-        // procesar datos para crear matriz pivote
+        // procesar datos para crear matriz
         $equipos = [];
         $centrosCosto = [];
         $centrosSiglas = [];

@@ -1,11 +1,11 @@
 <?php
-// modelo para gestionar estudios de mercado vinculados a un catálogo
+// modelo para gestionar fichas tecnicas (PDF) vinculadas a una tecnologia (T1, T2, T3, etc.)
 
 require_once __DIR__ . '/../core/Database.php';
 
 class EstudioMercado
 {
-    // retiene los estudios asociados a un catálogo
+    // guarda las fichas técnicas (PDF) asociadas a una tecnología
     public static function getByCatalogo($idCatalogo)
     {
         $conn = Database::connect();
@@ -19,7 +19,7 @@ class EstudioMercado
         return $stmt->fetchAll();
     }
 
-    // crea un nuevo registro de estudio de mercado
+    // crea un nuevo registro de fichas técnicas (PDF) para una tecnología
     public static function create($data)
     {
         $conn = Database::connect();
@@ -36,7 +36,7 @@ class EstudioMercado
         ]);
     }
 
-    // borra un estudio por id
+    // borra una ficha técnica (PDF) por id
     public static function delete($id)
     {
         $conn = Database::connect();
@@ -44,7 +44,7 @@ class EstudioMercado
         $stmt->execute([$id]);
     }
 
-    // encuentra un estudio específico
+    // encuentra una ficha técnica (PDF) específica
     public static function find($id)
     {
         $conn = Database::connect();
