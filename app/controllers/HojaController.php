@@ -39,6 +39,14 @@ class HojaController extends Controller
             die("Hoja no especificada.");
         }
         $id = $_GET['id'];
+        
+        // Manejar cambio de estado si es POST
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
+            $nuevoEstado = isset($_POST['estado']) && (int)$_POST['estado'] === 1 ? 1 : 0;
+            HojaSiga::updateEstado($id, $nuevoEstado);
+            $this->redirect('index.php?controller=hoja&action=show&id=' . urlencode($id));
+        }
+        
         $hoja = HojaSiga::find($id);
         if (!$hoja) {
             die("Hoja no encontrada.");

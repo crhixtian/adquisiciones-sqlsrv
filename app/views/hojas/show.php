@@ -1,12 +1,5 @@
 <?php // vista detallada de una hoja con sus ítems y formulario de agregar detalle 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
-    $nuevoEstado = isset($_POST['estado']) && (int)$_POST['estado'] === 1 ? 1 : 0;
-    HojaSiga::updateEstado($hoja['Id'], $nuevoEstado);
-    header('Location: index.php?controller=hoja&action=show&id=' . urlencode($hoja['Id']));
-    exit;
-}
-
 $estadoActual = (int)($hoja['Estado'] ?? 0);
 $estadoTexto = $estadoActual === 1 ? 'Completo' : 'Incompleto';
 $estadoClase = $estadoActual === 1 ? 'bg-green text-white' : 'bg-yellow text-dark';

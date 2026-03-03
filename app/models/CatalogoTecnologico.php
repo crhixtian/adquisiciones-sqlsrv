@@ -13,7 +13,7 @@ class CatalogoTecnologico
             "SELECT Id, Tecnologia, NombreGenerico
              FROM CatalogoTecnologico
              WHERE Activo = 1
-             ORDER BY CAST(SUBSTRING(Tecnologia,2,LEN(Tecnologia)) AS INT), NombreGenerico"
+             ORDER BY Tecnologia, NombreGenerico"
         );
         return $stmt->fetchAll();
     }
