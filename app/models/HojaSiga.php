@@ -18,7 +18,7 @@ class HojaSiga
             $sql .= " WHERE hs.AnioFiscal = ?";
         }
 
-        $sql .= " ORDER BY cc.NombreCentro, hs.NPedidoCompra ASC";
+        $sql .= " ORDER BY  hs.NPedidoCompra, cc.NombreCentro ASC";
 
         $stmt = $conn->prepare($sql);
         if ($year !== null) {

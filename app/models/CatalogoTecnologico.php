@@ -13,7 +13,11 @@ class CatalogoTecnologico
             "SELECT Id, Tecnologia, NombreGenerico
              FROM CatalogoTecnologico
              WHERE Activo = 1
-             ORDER BY Tecnologia, NombreGenerico"
+             ORDER BY
+                CASE WHEN Tecnologia LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
+                TRY_CAST(SUBSTRING(Tecnologia, 2, LEN(Tecnologia)) AS INT),
+                Tecnologia,
+                NombreGenerico"
         );
         return $stmt->fetchAll();
     }
@@ -54,7 +58,11 @@ class CatalogoTecnologico
                 dr.CodigoSiga,
                 ct.NombreGenerico,
                 ct.Tecnologia
-            ORDER BY ct.Tecnologia, dr.CodigoSiga";
+            ORDER BY
+                CASE WHEN ct.Tecnologia LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
+                TRY_CAST(SUBSTRING(ct.Tecnologia, 2, LEN(ct.Tecnologia)) AS INT),
+                ct.Tecnologia,
+                dr.CodigoSiga";
 
         $stmt = $conn->prepare($sql);
         if ($year) {
