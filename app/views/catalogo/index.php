@@ -44,7 +44,7 @@
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">
-                                <a href="index.php?controller=catalogo&action=editEstudios&id=<?= $row['IdCatalogo'] ?>" class="btn btn-sm btn-primary">Editar</a>
+                                <a href="index.php?controller=catalogo&action=editEstudios&id=<?= $row['IdCatalogo'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-sm btn-primary">Editar</a>
                             </td>
                         </tr>
                     <?php endforeach; ?>

@@ -6,16 +6,28 @@ require_once __DIR__ . '/../core/Database.php';
 class EstudioMercado
 {
     // guarda las fichas técnicas (PDF) asociadas a una tecnología
-    public static function getByCatalogo($idCatalogo)
+    public static function getByCatalogo($idCatalogo, $year = null)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare(
-            "SELECT Id, Marca, Modelo, RutaDocumento, FechaRegistro
-             FROM EstudioMercado
-             WHERE IdCatalogoTec = ?
-             ORDER BY FechaRegistro DESC"
-        );
-        $stmt->execute([$idCatalogo]);
+
+        if ($year === null) {
+            $stmt = $conn->prepare(
+                "SELECT Id, Marca, Modelo, AnioFiscal, RutaDocumento, FechaRegistro
+                 FROM EstudioMercado
+                 WHERE IdCatalogoTec = ?
+                 ORDER BY AnioFiscal DESC, FechaRegistro DESC"
+            );
+            $stmt->execute([$idCatalogo]);
+        } else {
+            $stmt = $conn->prepare(
+                "SELECT Id, Marca, Modelo, AnioFiscal, RutaDocumento, FechaRegistro
+                 FROM EstudioMercado
+                 WHERE IdCatalogoTec = ? AND AnioFiscal = ?
+                 ORDER BY FechaRegistro DESC"
+            );
+            $stmt->execute([$idCatalogo, $year]);
+        }
+
         return $stmt->fetchAll();
     }
 
@@ -25,13 +37,14 @@ class EstudioMercado
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "INSERT INTO EstudioMercado
-             (IdCatalogoTec, Marca, Modelo, RutaDocumento)
-             VALUES (?, ?, ?, ?)"
+             (IdCatalogoTec, Marca, Modelo, AnioFiscal, RutaDocumento)
+             VALUES (?, ?, ?, ?, ?)"
         );
         $stmt->execute([
             $data['IdCatalogoTec'],
             $data['Marca'],
             $data['Modelo'],
+            $data['AnioFiscal'],
             $data['RutaDocumento'],
         ]);
     }

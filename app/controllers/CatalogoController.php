@@ -48,7 +48,6 @@ class CatalogoController extends Controller
         $catalogo = CatalogoTecnologico::find($id);
         if (!$catalogo) die("Catálogo no encontrado.");
 
-        $estudios = EstudioMercado::getByCatalogo($id);
         $years = CatalogoTecnologico::pedidosCompraYearsByCatalogo($id);
 
         $selectedYear = null;
@@ -57,7 +56,11 @@ class CatalogoController extends Controller
             if (!in_array($selectedYear, $years, true)) {
                 $selectedYear = null;
             }
+        } elseif (!empty($years)) {
+            $selectedYear = (int) $years[0];
         }
+
+        $estudios = EstudioMercado::getByCatalogo($id, $selectedYear);
 
         $pedidosCompra = CatalogoTecnologico::pedidosCompraByCatalogo($id, $selectedYear);
         $this->render('catalogo/edit_estudios', [
@@ -76,6 +79,16 @@ class CatalogoController extends Controller
             $idCatalogo = (int) $_POST['IdCatalogoTec'];
             $marca = trim($_POST['Marca']);
             $modelo = trim($_POST['Modelo']);
+            $anioFiscal = isset($_POST['AnioFiscal']) && $_POST['AnioFiscal'] !== '' ? (int) $_POST['AnioFiscal'] : null;
+
+            if ($anioFiscal === null) {
+                die("Debe seleccionar un año fiscal para la ficha técnica.");
+            }
+
+            $years = CatalogoTecnologico::pedidosCompraYearsByCatalogo($idCatalogo);
+            if (!in_array($anioFiscal, $years, true)) {
+                die("El año fiscal seleccionado no es válido para este catálogo.");
+            }
 
             if (!isset($_FILES['Documento']) || $_FILES['Documento']['error'] !== 0) {
                 die("Error al subir archivo.");
@@ -97,10 +110,11 @@ class CatalogoController extends Controller
                 'IdCatalogoTec' => $idCatalogo,
                 'Marca' => $marca,
                 'Modelo' => $modelo,
+                'AnioFiscal' => $anioFiscal,
                 'RutaDocumento' => $rutaFinal
             ]);
 
-            $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo);
+            $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo . '&year=' . $anioFiscal);
         }
     }
 
@@ -112,12 +126,21 @@ class CatalogoController extends Controller
         }
         $idEstudio = (int) $_GET['eliminar'];
         $idCatalogo = (int) $_GET['id'];
+        $selectedYear = isset($_GET['year']) && $_GET['year'] !== '' && $_GET['year'] !== 'all'
+            ? (int) $_GET['year']
+            : null;
 
         $estudio = EstudioMercado::find($idEstudio);
         if ($estudio && file_exists(__DIR__ . '/../../' . $estudio['RutaDocumento'])) {
             unlink(__DIR__ . '/../../' . $estudio['RutaDocumento']);
         }
         EstudioMercado::delete($idEstudio);
-        $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo);
+
+        $url = 'index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo;
+        if ($selectedYear !== null) {
+            $url .= '&year=' . $selectedYear;
+        }
+
+        $this->redirect($url);
     }
 }

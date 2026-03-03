@@ -34,9 +34,16 @@ class CatalogoTecnologico
                 ON ct.Id = dr.IdCatalogoTec
             INNER JOIN HojaSiga hs
                 ON dr.IdHojaSiga = hs.Id
-            LEFT JOIN EstudioMercado em
-                ON em.IdCatalogoTec = ct.Id
         ";
+
+        if ($year) {
+            $sql .= " LEFT JOIN EstudioMercado em
+                ON em.IdCatalogoTec = ct.Id
+               AND em.AnioFiscal = ? ";
+        } else {
+            $sql .= " LEFT JOIN EstudioMercado em
+                ON em.IdCatalogoTec = ct.Id ";
+        }
 
         if ($year) {
             $sql .= " WHERE hs.AnioFiscal = ? ";
@@ -51,7 +58,7 @@ class CatalogoTecnologico
 
         $stmt = $conn->prepare($sql);
         if ($year) {
-            $stmt->execute([$year]);
+            $stmt->execute([$year, $year]);
         } else {
             $stmt->execute();
         }
