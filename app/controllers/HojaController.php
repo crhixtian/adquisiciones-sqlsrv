@@ -12,9 +12,28 @@ class HojaController extends Controller
     // muestra todas las hojas junto con los centros de costo disponibles
     public function index()
     {
-        $hojas = HojaSiga::all();
+        $years = HojaSiga::years();
+
+        $selectedYear = null;
+        if (isset($_GET['year'])) {
+            if ($_GET['year'] !== 'all' && $_GET['year'] !== '') {
+                $selectedYear = (int) $_GET['year'];
+                if (!in_array($selectedYear, $years, true)) {
+                    $selectedYear = !empty($years) ? (int) $years[0] : null;
+                }
+            }
+        } elseif (!empty($years)) {
+            $selectedYear = (int) $years[0];
+        }
+
+        $hojas = HojaSiga::all($selectedYear);
         $centros = CentroCosto::all();
-        $this->render('hojas/index', ['hojas' => $hojas, 'centros' => $centros]);
+        $this->render('hojas/index', [
+            'hojas' => $hojas,
+            'centros' => $centros,
+            'years' => $years,
+            'selectedYear' => $selectedYear,
+        ]);
     }
 
     // crea una nueva hoja a partir de los datos POST
@@ -62,7 +81,16 @@ class HojaController extends Controller
         if (!isset($_GET['id'])) {
             die("Hoja no especificada.");
         }
+        $selectedYear = isset($_GET['year']) && $_GET['year'] !== '' && $_GET['year'] !== 'all'
+            ? (int) $_GET['year']
+            : null;
+
         HojaSiga::delete($_GET['id']);
-        $this->redirect('index.php?controller=hoja&action=index');
+
+        $url = 'index.php?controller=hoja&action=index';
+        if ($selectedYear !== null) {
+            $url .= '&year=' . $selectedYear;
+        }
+        $this->redirect($url);
     }
 }

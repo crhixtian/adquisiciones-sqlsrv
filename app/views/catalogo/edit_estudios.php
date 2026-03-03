@@ -112,32 +112,29 @@
             <h4>Agregar Nuevo Ficha Técnica</h4>
             <form method="POST" action="index.php?controller=catalogo&action=uploadEstudio" enctype="multipart/form-data">
                 <input type="hidden" name="IdCatalogoTec" value="<?= $catalogo['Id'] ?>">
+                <input type="hidden" name="AnioFiscal" value="<?= $selectedYear !== null ? (int)$selectedYear : '' ?>">
                 <div class="row">
-                    <div class="col-md-3">
-                        <label class="form-label">Año Fiscal</label>
-                        <select name="AnioFiscal" class="form-select" required>
-                            <option value="">Seleccione...</option>
-                            <?php foreach ($years as $y): ?>
-                                <option value="<?= (int)$y ?>" <?= ($selectedYear === (int)$y) ? 'selected' : '' ?>><?= (int)$y ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label">Marca</label>
                         <input type="text" name="Marca" class="form-control" required>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label">Modelo</label>
                         <input type="text" name="Modelo" class="form-control" required>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label">PDF</label>
                         <input type="file" name="Documento" accept="application/pdf" class="form-control" required>
                     </div>
                 </div>
+                <?php if ($selectedYear === null): ?>
+                    <div class="alert alert-warning mt-3 mb-0">
+                        Para registrar una ficha técnica, seleccione un año específico en el filtro superior.
+                    </div>
+                <?php endif; ?>
                 <div class="mt-3 text-end">
                     <a href="index.php?controller=catalogo&action=index<?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-secondary">Volver</a>
-                    <button type="submit" class="btn btn-primary">Guardar Documento</button>
+                    <button type="submit" class="btn btn-primary" <?= $selectedYear === null ? 'disabled' : '' ?>>Guardar Documento</button>
                 </div>
             </form>
         </div>

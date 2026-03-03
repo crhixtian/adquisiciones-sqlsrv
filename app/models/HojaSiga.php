@@ -7,16 +7,36 @@ class HojaSiga
 {
 
     // retorna todas las hojas junto con información de centro de costo
-    public static function all()
+    public static function all($year = null)
     {
         $conn = Database::connect();
-        $stmt = $conn->query(
-            "SELECT hs.Id, hs.NPedidoCompra, hs.Meta, hs.AnioFiscal, hs.FechaRegistro, hs.Estado, cc.NombreCentro
-             FROM HojaSiga hs
-             INNER JOIN CentroCosto cc ON hs.IdCentroCosto = cc.Id
-             ORDER BY cc.NombreCentro, hs.NPedidoCompra ASC"
-        );
+        $sql = "SELECT hs.Id, hs.NPedidoCompra, hs.Meta, hs.AnioFiscal, hs.FechaRegistro, hs.Estado, cc.NombreCentro
+                FROM HojaSiga hs
+                INNER JOIN CentroCosto cc ON hs.IdCentroCosto = cc.Id";
+
+        if ($year !== null) {
+            $sql .= " WHERE hs.AnioFiscal = ?";
+        }
+
+        $sql .= " ORDER BY cc.NombreCentro, hs.NPedidoCompra ASC";
+
+        $stmt = $conn->prepare($sql);
+        if ($year !== null) {
+            $stmt->execute([$year]);
+        } else {
+            $stmt->execute();
+        }
+
         return $stmt->fetchAll();
+    }
+
+    // devuelve años fiscales disponibles en hojas
+    public static function years()
+    {
+        $conn = Database::connect();
+        $stmt = $conn->query("SELECT DISTINCT AnioFiscal FROM HojaSiga ORDER BY AnioFiscal DESC");
+        $rows = $stmt->fetchAll();
+        return array_map('intval', array_column($rows, 'AnioFiscal'));
     }
 
     // busca una hoja específica con información de centro de costo

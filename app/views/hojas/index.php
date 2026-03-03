@@ -2,9 +2,23 @@
 ?>
 <div class="col-12">
     <div class="card">
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">Lista de Pedidos de Compra</h3>
-            <div class="card-actions">
+            <div class="card-actions d-flex align-items-center gap-2">
+                <form method="get" action="index.php" class="d-flex align-items-center">
+                    <input type="hidden" name="controller" value="hoja">
+                    <input type="hidden" name="action" value="index">
+                    <label class="me-2 mb-0">Año:</label>
+                    <select name="year" class="form-select form-select-sm" style="width:120px;" onchange="this.form.submit()">
+                        <option value="all" <?= $selectedYear === null ? 'selected' : '' ?>>Todos</option>
+                        <?php if (!empty($years)): ?>
+                            <?php foreach ($years as $y): ?>
+                                <option value="<?= (int)$y ?>" <?= ($selectedYear === (int)$y) ? 'selected' : '' ?>><?= (int)$y ?></option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </select>
+                    <noscript><button class="btn btn-sm btn-primary ms-2">Filtrar</button></noscript>
+                </form>
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createHojaModal">+ Nuevo</button>
             </div>
         </div>
@@ -56,7 +70,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <a href="index.php?controller=hoja&action=delete&id=<?= $row['Id'] ?>" class="btn btn-danger">Sí, eliminar</a>
+                                            <a href="index.php?controller=hoja&action=delete&id=<?= $row['Id'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-danger">Sí, eliminar</a>
                                         </div>
                                     </div>
                                 </div>
