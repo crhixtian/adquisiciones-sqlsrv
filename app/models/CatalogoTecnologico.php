@@ -109,7 +109,7 @@ class CatalogoTecnologico
 
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $stmt->fetchAll();
     }
 
     // obtiene años disponibles para pedidos de una tecnologia 
@@ -125,7 +125,7 @@ class CatalogoTecnologico
              ORDER BY hs.AnioFiscal DESC"
         );
         $stmt->execute([$idCatalogo]);
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $rows = $stmt->fetchAll();
         return array_map('intval', array_column($rows, 'AnioFiscal'));
     }
 }
