@@ -27,9 +27,22 @@ class CatalogoTecnologico
     {
         $conn = Database::connect();
         $sql = "
+            WITH CodigosCTE AS (
+                SELECT DISTINCT 
+                    dr.IdCatalogoTecnologico,
+                    dr.CodigoSiga
+                FROM DetalleRequerimiento dr
+            ),
+            CodigosAgrupados AS (
+                SELECT 
+                    IdCatalogoTecnologico,
+                    STRING_AGG(CodigoSiga, ', ') AS CodigoSiga
+                FROM CodigosCTE
+                GROUP BY IdCatalogoTecnologico
+            )
             SELECT 
                 ct.Id AS IdCatalogo,
-                STRING_AGG(dr.CodigoSiga, ', ') AS CodigoSiga,
+                ISNULL(ca.CodigoSiga, '') AS CodigoSiga,
                 ct.NombreGenerico,
                 ct.CategoriaTecnologica,
                 (SELECT COUNT(*) FROM FichaTecnica ft2
@@ -40,21 +53,19 @@ class CatalogoTecnologico
         }
 
         $sql .= ") AS TotalEstudios
-            FROM DetalleRequerimiento dr
-            INNER JOIN CatalogoTecnologico ct
-                ON ct.Id = dr.IdCatalogoTecnologico
-            INNER JOIN Requerimiento r
-                ON dr.IdRequerimiento = r.Id
-        ";
+            FROM CatalogoTecnologico ct
+            LEFT JOIN CodigosAgrupados ca ON ct.Id = ca.IdCatalogoTecnologico
+            WHERE EXISTS (
+                SELECT 1 FROM DetalleRequerimiento dr
+                INNER JOIN Requerimiento r ON dr.IdRequerimiento = r.Id
+                WHERE dr.IdCatalogoTecnologico = ct.Id";
 
         if ($year) {
-            $sql .= " WHERE r.Anio = ? ";
+            $sql .= " AND r.Anio = ?";
         }
 
-        $sql .= " GROUP BY 
-                ct.Id, 
-                ct.NombreGenerico, 
-                ct.CategoriaTecnologica
+        $sql .= "
+            )
             ORDER BY
                 CASE WHEN ct.CategoriaTecnologica LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
                 TRY_CAST(SUBSTRING(ct.CategoriaTecnologica, 2, LEN(ct.CategoriaTecnologica)) AS INT),

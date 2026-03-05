@@ -26,7 +26,7 @@
                         <th>Código</th>
                         <th>Tecnología</th>
                         <th>Nombre Genérico</th>
-                        <th>Documentos</th>
+                        <th>Estado</th>
                         <th class="text-end">Acciones</th>
                     </tr>
                 </thead>
@@ -37,10 +37,10 @@
                             <td><?= htmlspecialchars($row['CategoriaTecnologica']) ?></td>
                             <td><?= htmlspecialchars($row['NombreGenerico']) ?></td>
                             <td>
-                                <?php if ($row['TotalEstudios'] >= 4): ?>
-                                    <span class="badge bg-success text-white"><?= $row['TotalEstudios'] ?> Documentos</span>
+                                <?php if ($row['Estado'] === 'Completo'): ?>
+                                    <span class="badge bg-success text-white">Completo</span>
                                 <?php else: ?>
-                                    <span class="badge bg-red text-white"><?= $row['TotalEstudios'] ?> Documentos</span>
+                                    <span class="badge bg-red text-white">Incompleto</span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">

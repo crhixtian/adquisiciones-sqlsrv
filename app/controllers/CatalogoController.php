@@ -93,6 +93,11 @@ class CatalogoController extends Controller
                 die("El año seleccionado no es válido para este catálogo.");
             }
 
+            $terminosExistentes = TerminosReferencia::getByCatalogo($idCatalogo, $anio);
+            if (!empty($terminosExistentes)) {
+                die("Ya existe un término de referencia para este año. No se permiten más cargas de archivos.");
+            }
+
             if (!isset($_FILES['Documento']) || $_FILES['Documento']['error'] !== 0) {
                 die("Error al subir archivo.");
             }
@@ -143,6 +148,11 @@ class CatalogoController extends Controller
                 die("El año seleccionado no es válido para este catálogo.");
             }
 
+            $terminosExistentes = TerminosReferencia::getByCatalogo($idCatalogo, $anio);
+            if (!empty($terminosExistentes)) {
+                die("Ya existe un término de referencia para este año. No se permiten más cargas de archivos.");
+            }
+
             if (!isset($_FILES['Documento']) || $_FILES['Documento']['error'] !== 0) {
                 die("Error al subir archivo.");
             }
@@ -187,6 +197,11 @@ class CatalogoController extends Controller
             ? (int) $_GET['year']
             : null;
 
+        $ficha = FichaTecnica::find($idEstudio);
+        if ($ficha && isset($ficha['RutaDocumento'])) {
+            $this->deleteUploadedDocument($ficha['RutaDocumento']);
+        }
+
         FichaTecnica::delete($idEstudio);
 
         $url = 'index.php?controller=catalogo&action=editDocumentos&id=' . $idCatalogo;
@@ -208,6 +223,11 @@ class CatalogoController extends Controller
         $selectedYear = isset($_GET['year']) && $_GET['year'] !== '' && $_GET['year'] !== 'all'
             ? (int) $_GET['year']
             : null;
+
+        $termino = TerminosReferencia::find($idTermino);
+        if ($termino && isset($termino['RutaDocumento'])) {
+            $this->deleteUploadedDocument($termino['RutaDocumento']);
+        }
 
         TerminosReferencia::delete($idTermino);
 
@@ -256,5 +276,78 @@ class CatalogoController extends Controller
         header('Content-Length: ' . filesize($rutaArchivo));
         readfile($rutaArchivo);
         exit;
+    }
+
+    // visualiza un documento PDF en línea (sin descarga forzada)
+    public function viewDocumento()
+    {
+        if (!isset($_GET['tipo']) || !isset($_GET['id'])) {
+            die("Parámetros inválidos.");
+        }
+
+        $tipo = $_GET['tipo']; // 'ficha' o 'termino'
+        $id = (int) $_GET['id'];
+
+        if ($tipo === 'ficha') {
+            $documento = FichaTecnica::getDocumento($id);
+        } elseif ($tipo === 'termino') {
+            $documento = TerminosReferencia::getDocumento($id);
+        } else {
+            die("Tipo de documento inválido.");
+        }
+
+        if (!$documento) {
+            die("Documento no encontrado.");
+        }
+
+        $rutaArchivo = __DIR__ . '/../../' . $documento['RutaDocumento'];
+        if (!file_exists($rutaArchivo)) {
+            die("Archivo no encontrado en el servidor.");
+        }
+
+        $nombreArchivo = basename($rutaArchivo);
+
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="' . rawurlencode($nombreArchivo) . '"');
+        header('Content-Length: ' . filesize($rutaArchivo));
+        readfile($rutaArchivo);
+        exit;
+    }
+
+    private function deleteUploadedDocument($rutaRelativa)
+    {
+        if (!$rutaRelativa) {
+            return;
+        }
+
+        $uploadsDir = realpath(__DIR__ . '/../../uploads');
+        if ($uploadsDir === false) {
+            return;
+        }
+
+        $rutaNormalizada = str_replace('\\', '/', (string) $rutaRelativa);
+        $prefijo = 'uploads/';
+        if (strpos($rutaNormalizada, $prefijo) !== 0) {
+            return;
+        }
+
+        $subRuta = ltrim(substr($rutaNormalizada, strlen($prefijo)), '/');
+        if ($subRuta === '') {
+            return;
+        }
+
+        $rutaArchivo = $uploadsDir . '/' . $subRuta;
+        $rutaRealArchivo = realpath($rutaArchivo);
+        if ($rutaRealArchivo === false) {
+            return;
+        }
+
+        if (strpos($rutaRealArchivo, $uploadsDir . DIRECTORY_SEPARATOR) !== 0) {
+            return;
+        }
+
+        if (is_file($rutaRealArchivo)) {
+            @unlink($rutaRealArchivo);
+        }
     }
 }

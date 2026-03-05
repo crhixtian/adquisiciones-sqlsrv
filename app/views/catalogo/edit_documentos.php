@@ -90,6 +90,7 @@
                                 ?>
                                 <td><?= $fechaText ?></td>
                                 <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-primary js-ver-pdf" data-pdf-url="index.php?controller=catalogo&action=viewDocumento&tipo=ficha&id=<?= $f['Id'] ?>">Ver PDF</button>
                                     <a href="index.php?controller=catalogo&action=deleteFichaTecnica&eliminar=<?= $f['Id'] ?>&id=<?= $catalogo['Id'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar ficha técnica?')">Eliminar</a>
                                 </td>
                             </tr>
@@ -138,6 +139,7 @@
                                 ?>
                                 <td><?= $fechaText ?></td>
                                 <td class="text-end">
+                                    <button type="button" class="btn btn-sm btn-outline-primary js-ver-pdf" data-pdf-url="index.php?controller=catalogo&action=viewDocumento&tipo=termino&id=<?= $t['Id'] ?>">Ver PDF</button>
                                     <a href="index.php?controller=catalogo&action=deleteTerminosReferencia&eliminar=<?= $t['Id'] ?>&id=<?= $catalogo['Id'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar término de referencia?')">Eliminar</a>
                                 </td>
                             </tr>
@@ -150,62 +152,122 @@
                 </tbody>
             </table>
 
-            <hr>
-
-            <h4>Agregar Nueva Ficha Técnica</h4>
-            <form method="POST" action="index.php?controller=catalogo&action=uploadFichaTecnica" enctype="multipart/form-data">
-                <input type="hidden" name="IdCatalogoTecnologico" value="<?= $catalogo['Id'] ?>">
-                <input type="hidden" name="Anio" value="<?= $selectedYear !== null ? (int)$selectedYear : '' ?>">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label class="form-label">Marca</label>
-                        <input type="text" name="Marca" class="form-control" required>
-                    </div>
-                    <div class="col-md-3">
-                        <label class="form-label">Modelo</label>
-                        <input type="text" name="Modelo" class="form-control" required>
-                    </div>
-                    <div class="col-md-6">
-                        <label class="form-label">Documento PDF</label>
-                        <input type="file" name="Documento" accept="application/pdf" class="form-control" required>
-                    </div>
+            <div id="visorPdfContainer" class="card mt-3 d-none">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">Vista previa de documento PDF</h4>
+                    <button type="button" class="btn btn-sm btn-secondary" id="cerrarVisorPdf">Cerrar</button>
                 </div>
-                <?php if ($selectedYear === null): ?>
-                    <div class="alert alert-warning mt-3 mb-0">
-                        Para registrar una ficha técnica, seleccione un año específico en el filtro superior.
-                    </div>
-                <?php endif; ?>
-                <div class="mt-3 text-end">
-                    <button type="submit" class="btn btn-primary" <?= $selectedYear === null ? 'disabled' : '' ?>>Guardar Ficha Técnica</button>
+                <div class="card-body p-0">
+                    <iframe id="visorPdfFrame" src="" style="width: 100%; height: 75vh; border: 0;" title="Vista previa PDF"></iframe>
                 </div>
-            </form>
+            </div>
 
             <hr>
 
-            <h4>Agregar Nuevo Término de Referencia</h4>
-            <form method="POST" action="index.php?controller=catalogo&action=uploadTerminosReferencia" enctype="multipart/form-data">
-                <input type="hidden" name="IdCatalogoTecnologico" value="<?= $catalogo['Id'] ?>">
-                <input type="hidden" name="Anio" value="<?= $selectedYear !== null ? (int)$selectedYear : '' ?>">
-                <div class="row">
-                    <div class="col-md-4">
-                        <label class="form-label">Código TDR</label>
-                        <input type="text" name="CodigoTDR" class="form-control" required>
-                    </div>
-                    <div class="col-md-8">
-                        <label class="form-label">Documento PDF</label>
-                        <input type="file" name="Documento" accept="application/pdf" class="form-control" required>
-                    </div>
+            <?php $bloquearCargaDocumentos = ($selectedYear !== null && count($terminosReferencia) > 0); ?>
+            <?php if ($bloquearCargaDocumentos): ?>
+                <div class="alert alert-info">
+                    Ya existe un término de referencia para el año seleccionado. La carga de archivos está deshabilitada.
                 </div>
-                <?php if ($selectedYear === null): ?>
-                    <div class="alert alert-warning mt-3 mb-0">
-                        Para registrar un término de referencia, seleccione un año específico en el filtro superior.
+            <?php else: ?>
+                <h4>Agregar Nueva Ficha Técnica</h4>
+                <form method="POST" action="index.php?controller=catalogo&action=uploadFichaTecnica" enctype="multipart/form-data">
+                    <input type="hidden" name="IdCatalogoTecnologico" value="<?= $catalogo['Id'] ?>">
+                    <input type="hidden" name="Anio" value="<?= $selectedYear !== null ? (int)$selectedYear : '' ?>">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Marca</label>
+                            <input type="text" name="Marca" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Modelo</label>
+                            <input type="text" name="Modelo" class="form-control" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Documento PDF</label>
+                            <input type="file" name="Documento" accept="application/pdf" class="form-control" required>
+                        </div>
                     </div>
-                <?php endif; ?>
-                <div class="mt-3 text-end">
-                    <a href="index.php?controller=catalogo&action=index<?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-secondary">Volver</a>
-                    <button type="submit" class="btn btn-primary" <?= $selectedYear === null ? 'disabled' : '' ?>>Guardar Término de Referencia</button>
-                </div>
-            </form>
+                    <?php if ($selectedYear === null): ?>
+                        <div class="alert alert-warning mt-3 mb-0">
+                            Para registrar una ficha técnica, seleccione un año específico en el filtro superior.
+                        </div>
+                    <?php endif; ?>
+                    <div class="mt-3 text-end">
+                        <button type="submit" class="btn btn-primary" <?= $selectedYear === null ? 'disabled' : '' ?>>Guardar Ficha Técnica</button>
+                    </div>
+                </form>
+
+                <hr>
+
+                <h4>Agregar Nuevo Término de Referencia</h4>
+                <?php
+                $codigoTdrSugerido = '';
+                if ($selectedYear !== null) {
+                    $categoriaTecnologica = strtoupper(trim((string)($catalogo['CategoriaTecnologica'] ?? '')));
+                    $codigoCategoria = preg_match('/^T\d+$/', $categoriaTecnologica)
+                        ? $categoriaTecnologica
+                        : 'T1';
+                    $codigoTdrSugerido = 'TDR-' . $codigoCategoria . '-' . (int)$selectedYear;
+                }
+                ?>
+                <form method="POST" action="index.php?controller=catalogo&action=uploadTerminosReferencia" enctype="multipart/form-data">
+                    <input type="hidden" name="IdCatalogoTecnologico" value="<?= $catalogo['Id'] ?>">
+                    <input type="hidden" name="Anio" value="<?= $selectedYear !== null ? (int)$selectedYear : '' ?>">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label class="form-label">Código TDR</label>
+                            <input type="text" name="CodigoTDR" class="form-control" value="<?= htmlspecialchars($codigoTdrSugerido) ?>" placeholder="TDR-<?= htmlspecialchars(strtoupper((string)($catalogo['CategoriaTecnologica'] ?? 'T1'))) ?>-<?= $selectedYear !== null ? (int)$selectedYear : date('Y') ?>" required>
+                        </div>
+                        <div class="col-md-8">
+                            <label class="form-label">Documento PDF</label>
+                            <input type="file" name="Documento" accept="application/pdf" class="form-control" required>
+                        </div>
+                    </div>
+                    <?php if ($selectedYear === null): ?>
+                        <div class="alert alert-warning mt-3 mb-0">
+                            Para registrar un término de referencia, seleccione un año específico en el filtro superior.
+                        </div>
+                    <?php endif; ?>
+                    <div class="mt-3 text-end">
+                        <a href="index.php?controller=catalogo&action=index<?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-secondary">Volver</a>
+                        <button type="submit" class="btn btn-primary" <?= $selectedYear === null ? 'disabled' : '' ?>>Guardar Término de Referencia</button>
+                    </div>
+                </form>
+            <?php endif; ?>
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var botonesVerPdf = document.querySelectorAll('.js-ver-pdf');
+        var visorContainer = document.getElementById('visorPdfContainer');
+        var visorFrame = document.getElementById('visorPdfFrame');
+        var cerrarVisor = document.getElementById('cerrarVisorPdf');
+
+        botonesVerPdf.forEach(function (boton) {
+            boton.addEventListener('click', function () {
+                var pdfUrl = boton.getAttribute('data-pdf-url');
+                if (!pdfUrl || !visorContainer || !visorFrame) {
+                    return;
+                }
+
+                visorFrame.src = pdfUrl;
+                visorContainer.classList.remove('d-none');
+                visorContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        if (cerrarVisor) {
+            cerrarVisor.addEventListener('click', function () {
+                if (!visorContainer || !visorFrame) {
+                    return;
+                }
+
+                visorFrame.src = '';
+                visorContainer.classList.add('d-none');
+            });
+        }
+    });
+</script>
