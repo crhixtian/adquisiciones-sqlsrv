@@ -29,10 +29,17 @@ class CatalogoTecnologico
         $sql = "
             SELECT 
                 ct.Id AS IdCatalogo,
-                dr.CodigoSiga,
+                STRING_AGG(dr.CodigoSiga, ', ') AS CodigoSiga,
                 ct.NombreGenerico,
                 ct.CategoriaTecnologica,
-                COUNT(ft.Id) AS TotalEstudios
+                (SELECT COUNT(*) FROM FichaTecnica ft2
+                 WHERE ft2.IdCatalogoTecnologico = ct.Id";
+
+        if ($year) {
+            $sql .= " AND ft2.Anio = ?";
+        }
+
+        $sql .= ") AS TotalEstudios
             FROM DetalleRequerimiento dr
             INNER JOIN CatalogoTecnologico ct
                 ON ct.Id = dr.IdCatalogoTecnologico
@@ -41,28 +48,18 @@ class CatalogoTecnologico
         ";
 
         if ($year) {
-            $sql .= " LEFT JOIN FichaTecnica ft
-                ON ft.IdCatalogoTecnologico = ct.Id
-               AND ft.Anio = ? ";
-        } else {
-            $sql .= " LEFT JOIN FichaTecnica ft
-                ON ft.IdCatalogoTecnologico = ct.Id ";
-        }
-
-        if ($year) {
             $sql .= " WHERE r.Anio = ? ";
         }
 
         $sql .= " GROUP BY 
-                ct.Id,
-                dr.CodigoSiga,
-                ct.NombreGenerico,
+                ct.Id, 
+                ct.NombreGenerico, 
                 ct.CategoriaTecnologica
             ORDER BY
                 CASE WHEN ct.CategoriaTecnologica LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
                 TRY_CAST(SUBSTRING(ct.CategoriaTecnologica, 2, LEN(ct.CategoriaTecnologica)) AS INT),
                 ct.CategoriaTecnologica,
-                dr.CodigoSiga";
+                ct.NombreGenerico";
 
         $stmt = $conn->prepare($sql);
         if ($year) {
