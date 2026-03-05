@@ -12,7 +12,7 @@ class FichaTecnica
 
         if ($year === null) {
             $stmt = $conn->prepare(
-                "SELECT Id, Marca, Modelo, Anio, NombreDocumento, TipoMime, FechaRegistro
+                "SELECT Id, Marca, Modelo, Anio, RutaDocumento, FechaRegistro
                  FROM FichaTecnica
                  WHERE IdCatalogoTecnologico = ?
                  ORDER BY Anio DESC, FechaRegistro DESC"
@@ -20,7 +20,7 @@ class FichaTecnica
             $stmt->execute([$idCatalogo]);
         } else {
             $stmt = $conn->prepare(
-                "SELECT Id, Marca, Modelo, Anio, NombreDocumento, TipoMime, FechaRegistro
+                "SELECT Id, Marca, Modelo, Anio, RutaDocumento, FechaRegistro
                  FROM FichaTecnica
                  WHERE IdCatalogoTecnologico = ? AND Anio = ?
                  ORDER BY FechaRegistro DESC"
@@ -35,20 +35,22 @@ class FichaTecnica
     public static function create($data)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare(
-            "INSERT INTO FichaTecnica
-             (IdCatalogoTecnologico, Marca, Modelo, Anio, NombreDocumento, TipoMime, Documento)
-             VALUES (?, ?, ?, ?, ?, ?, ?)"
-        );
-        $stmt->execute([
+        $sql = "INSERT INTO FichaTecnica
+                (IdCatalogoTecnologico, Marca, Modelo, Anio, RutaDocumento)
+                VALUES (?, ?, ?, ?, ?)";
+        
+        $stmt = $conn->prepare($sql);
+        
+        // Guardar solo la ruta del archivo
+        $params = array(
             $data['IdCatalogoTecnologico'],
             $data['Marca'],
             $data['Modelo'],
             $data['Anio'],
-            $data['NombreDocumento'],
-            $data['TipoMime'],
-            $data['Documento'], // VARBINARY como string en PHP
-        ]);
+            $data['RutaDocumento']
+        );
+        
+        $stmt->execute($params);
     }
 
     // borra una ficha técnica por id
@@ -59,12 +61,12 @@ class FichaTecnica
         $stmt->execute([$id]);
     }
 
-    // encuentra una ficha técnica específica incluyendo el documento binario
+    // encuentra una ficha técnica específica
     public static function find($id)
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "SELECT Id, IdCatalogoTecnologico, Marca, Modelo, Anio, NombreDocumento, TipoMime, Documento, FechaRegistro
+            "SELECT Id, IdCatalogoTecnologico, Marca, Modelo, Anio, RutaDocumento, FechaRegistro
              FROM FichaTecnica 
              WHERE Id = ?"
         );
@@ -72,11 +74,11 @@ class FichaTecnica
         return $stmt->fetch();
     }
 
-    // obtiene solo el documento binario de una ficha técnica para descarga
+    // obtiene la ruta del documento de una ficha técnica para descarga
     public static function getDocumento($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT Documento, NombreDocumento, TipoMime FROM FichaTecnica WHERE Id = ?");
+        $stmt = $conn->prepare("SELECT RutaDocumento FROM FichaTecnica WHERE Id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }

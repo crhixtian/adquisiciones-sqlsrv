@@ -35,8 +35,8 @@ class SqlsrvStatement {
     private function throwError() {
         $errors = sqlsrv_errors(SQLSRV_ERR_ERRORS);
         $message = isset($errors[0]['message']) ? $errors[0]['message'] : 'Unknown SQLSRV error';
-        $code    = isset($errors[0]['SQLSTATE']) ? $errors[0]['SQLSTATE'] : 0;
-        throw new SqlsrvException($message, $code);
+        $code    = isset($errors[0]['SQLSTATE']) ? $errors[0]['SQLSTATE'] : '00000';
+        throw new SqlsrvException($message, (int)crc32($code));
     }
 }
 

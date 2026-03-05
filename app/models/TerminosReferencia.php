@@ -12,7 +12,7 @@ class TerminosReferencia
 
         if ($year === null) {
             $stmt = $conn->prepare(
-                "SELECT Id, CodigoTDR, Anio, NombreDocumento, TipoMime, FechaRegistro
+                "SELECT Id, CodigoTDR, Anio, RutaDocumento, FechaRegistro
                  FROM TerminosReferencia
                  WHERE IdCatalogoTecnologico = ?
                  ORDER BY Anio DESC, FechaRegistro DESC"
@@ -20,7 +20,7 @@ class TerminosReferencia
             $stmt->execute([$idCatalogo]);
         } else {
             $stmt = $conn->prepare(
-                "SELECT Id, CodigoTDR, Anio, NombreDocumento, TipoMime, FechaRegistro
+                "SELECT Id, CodigoTDR, Anio, RutaDocumento, FechaRegistro
                  FROM TerminosReferencia
                  WHERE IdCatalogoTecnologico = ? AND Anio = ?
                  ORDER BY FechaRegistro DESC"
@@ -31,23 +31,25 @@ class TerminosReferencia
         return $stmt->fetchAll();
     }
 
-    // crea un nuevo registro de términos de referencia (PDF como VARBINARY)
+    // crea un nuevo registro de términos de referencia
     public static function create($data)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare(
-            "INSERT INTO TerminosReferencia
-             (IdCatalogoTecnologico, CodigoTDR, Anio, NombreDocumento, TipoMime, Documento)
-             VALUES (?, ?, ?, ?, ?, ?)"
-        );
-        $stmt->execute([
+        $sql = "INSERT INTO TerminosReferencia
+                (IdCatalogoTecnologico, CodigoTDR, Anio, RutaDocumento)
+                VALUES (?, ?, ?, ?)";
+        
+        $stmt = $conn->prepare($sql);
+        
+        // Guardar solo la ruta del archivo
+        $params = array(
             $data['IdCatalogoTecnologico'],
             $data['CodigoTDR'],
             $data['Anio'],
-            $data['NombreDocumento'],
-            $data['TipoMime'],
-            $data['Documento'], // VARBINARY como string en PHP
-        ]);
+            $data['RutaDocumento']
+        );
+        
+        $stmt->execute($params);
     }
 
     // borra un término de referencia por id
@@ -58,12 +60,12 @@ class TerminosReferencia
         $stmt->execute([$id]);
     }
 
-    // encuentra un término de referencia específico incluyendo el documento binario
+    // encuentra un término de referencia específico
     public static function find($id)
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "SELECT Id, IdCatalogoTecnologico, CodigoTDR, Anio, NombreDocumento, TipoMime, Documento, FechaRegistro
+            "SELECT Id, IdCatalogoTecnologico, CodigoTDR, Anio, RutaDocumento, FechaRegistro
              FROM TerminosReferencia 
              WHERE Id = ?"
         );
@@ -71,11 +73,11 @@ class TerminosReferencia
         return $stmt->fetch();
     }
 
-    // obtiene solo el documento binario de un término de referencia para descarga
+    // obtiene la ruta del documento de un término de referencia para descarga
     public static function getDocumento($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT Documento, NombreDocumento, TipoMime FROM TerminosReferencia WHERE Id = ?");
+        $stmt = $conn->prepare("SELECT RutaDocumento FROM TerminosReferencia WHERE Id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }

@@ -15,7 +15,7 @@
             <h4>Pedidos de Compra donde aparece</h4>
             <form method="get" action="index.php" class="d-flex align-items-center mb-3">
                 <input type="hidden" name="controller" value="catalogo">
-                <input type="hidden" name="action" value="editEstudios">
+                <input type="hidden" name="action" value="editDocumentos">
                 <input type="hidden" name="id" value="<?= (int)$catalogo['Id'] ?>">
                 <label class="me-2 mb-0">Año:</label>
                 <select name="year" class="form-select form-select-sm me-2" style="width:120px;" onchange="this.form.submit()">
@@ -75,7 +75,7 @@
                                 <td><?= htmlspecialchars($f['Modelo']) ?></td>
                                 <td>
                                     <a href="index.php?controller=catalogo&action=downloadDocumento&tipo=ficha&id=<?= $f['Id'] ?>" class="btn btn-sm btn-outline-primary">
-                                        <?= htmlspecialchars($f['NombreDocumento']) ?>
+                                        <?= htmlspecialchars(basename($f['RutaDocumento'])) ?>
                                     </a>
                                 </td>
                                 <?php
@@ -90,7 +90,7 @@
                                 ?>
                                 <td><?= $fechaText ?></td>
                                 <td class="text-end">
-                                    <a href="index.php?controller=catalogo&action=deleteEstudio&eliminar=<?= $f['Id'] ?>&id=<?= $catalogo['Id'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar ficha técnica?')">Eliminar</a>
+                                    <a href="index.php?controller=catalogo&action=deleteFichaTecnica&eliminar=<?= $f['Id'] ?>&id=<?= $catalogo['Id'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar ficha técnica?')">Eliminar</a>
                                 </td>
                             </tr>
                         <?php endforeach; ?>
@@ -123,7 +123,7 @@
                                 <td><?= htmlspecialchars($t['CodigoTDR']) ?></td>
                                 <td>
                                     <a href="index.php?controller=catalogo&action=downloadDocumento&tipo=termino&id=<?= $t['Id'] ?>" class="btn btn-sm btn-outline-primary">
-                                        <?= htmlspecialchars($t['NombreDocumento']) ?>
+                                        <?= htmlspecialchars(basename($t['RutaDocumento'])) ?>
                                     </a>
                                 </td>
                                 <?php
@@ -153,7 +153,7 @@
             <hr>
 
             <h4>Agregar Nueva Ficha Técnica</h4>
-            <form method="POST" action="index.php?controller=catalogo&action=uploadEstudio" enctype="multipart/form-data">
+            <form method="POST" action="index.php?controller=catalogo&action=uploadFichaTecnica" enctype="multipart/form-data">
                 <input type="hidden" name="IdCatalogoTecnologico" value="<?= $catalogo['Id'] ?>">
                 <input type="hidden" name="Anio" value="<?= $selectedYear !== null ? (int)$selectedYear : '' ?>">
                 <div class="row">

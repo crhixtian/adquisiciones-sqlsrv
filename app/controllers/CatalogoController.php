@@ -42,7 +42,7 @@ class CatalogoController extends Controller
     }
 
     // muestra formulario para editar fichas tecnicas de un registro de tecnologia
-    public function editEstudios()
+    public function editDocumentos()
     {
         if (!isset($_GET['id'])) die("ID no válido.");
         $id = (int) $_GET['id'];
@@ -75,8 +75,8 @@ class CatalogoController extends Controller
         ]);
     }
 
-    // procesa carga de nueva ficha técnica (PDF como VARBINARY)
-    public function uploadEstudio()
+    // procesa carga de nueva ficha técnica (guardar en carpeta uploads)
+    public function uploadFichaTecnica()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $idCatalogo = (int) $_POST['IdCatalogoTecnologico'];
@@ -97,31 +97,36 @@ class CatalogoController extends Controller
                 die("Error al subir archivo.");
             }
 
-            // Leer el archivo en VARBINARY
+            // Guardar archivo en carpeta uploads
             $rutaTemp = $_FILES['Documento']['tmp_name'];
-            $nombreArchivo = basename($_FILES['Documento']['name']);
-            $tipoMime = $_FILES['Documento']['type'] ?: 'application/octet-stream';
+            $nombreOriginal = basename($_FILES['Documento']['name']);
             
-            $contenidoArchivo = file_get_contents($rutaTemp);
-            if ($contenidoArchivo === false) {
-                die("No se pudo leer el archivo.");
+            // Generar nombre único para el archivo
+            $timestamp = time();
+            $extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+            $nombreArchivo = $timestamp . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', pathinfo($nombreOriginal, PATHINFO_FILENAME)) . '.' . $extension;
+            $rutaDestino = __DIR__ . '/../../uploads/' . $nombreArchivo;
+            
+            if (!move_uploaded_file($rutaTemp, $rutaDestino)) {
+                die("No se pudo guardar el archivo.");
             }
+            
+            // Guardar ruta relativa en la BD
+            $rutaRelativa = 'uploads/' . $nombreArchivo;
 
             FichaTecnica::create([
                 'IdCatalogoTecnologico' => $idCatalogo,
                 'Marca' => $marca,
                 'Modelo' => $modelo,
                 'Anio' => $anio,
-                'NombreDocumento' => $nombreArchivo,
-                'TipoMime' => $tipoMime,
-                'Documento' => $contenidoArchivo
+                'RutaDocumento' => $rutaRelativa
             ]);
 
-            $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo . '&year=' . $anio);
+            $this->redirect('index.php?controller=catalogo&action=editDocumentos&id=' . $idCatalogo . '&year=' . $anio);
         }
     }
 
-    // procesa carga de nuevo término de referencia (PDF como VARBINARY)
+    // procesa carga de nuevo término de referencia (guardar en carpeta uploads)
     public function uploadTerminosReferencia()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -142,31 +147,36 @@ class CatalogoController extends Controller
                 die("Error al subir archivo.");
             }
 
-            // Leer el archivo en VARBINARY
+            // Guardar archivo en carpeta uploads
             $rutaTemp = $_FILES['Documento']['tmp_name'];
-            $nombreArchivo = basename($_FILES['Documento']['name']);
-            $tipoMime = $_FILES['Documento']['type'] ?: 'application/octet-stream';
+            $nombreOriginal = basename($_FILES['Documento']['name']);
             
-            $contenidoArchivo = file_get_contents($rutaTemp);
-            if ($contenidoArchivo === false) {
-                die("No se pudo leer el archivo.");
+            // Generar nombre único para el archivo
+            $timestamp = time();
+            $extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+            $nombreArchivo = $timestamp . '_' . preg_replace('/[^a-zA-Z0-9._-]/', '', pathinfo($nombreOriginal, PATHINFO_FILENAME)) . '.' . $extension;
+            $rutaDestino = __DIR__ . '/../../uploads/' . $nombreArchivo;
+            
+            if (!move_uploaded_file($rutaTemp, $rutaDestino)) {
+                die("No se pudo guardar el archivo.");
             }
+            
+            // Guardar ruta relativa en la BD
+            $rutaRelativa = 'uploads/' . $nombreArchivo;
 
             TerminosReferencia::create([
                 'IdCatalogoTecnologico' => $idCatalogo,
                 'CodigoTDR' => $codigoTDR,
                 'Anio' => $anio,
-                'NombreDocumento' => $nombreArchivo,
-                'TipoMime' => $tipoMime,
-                'Documento' => $contenidoArchivo
+                'RutaDocumento' => $rutaRelativa
             ]);
 
-            $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo . '&year=' . $anio);
+            $this->redirect('index.php?controller=catalogo&action=editDocumentos&id=' . $idCatalogo . '&year=' . $anio);
         }
     }
 
     // elimina una ficha técnica
-    public function deleteEstudio()
+    public function deleteFichaTecnica()
     {
         if (!isset($_GET['eliminar']) || !isset($_GET['id'])) {
             die("Parámetros inválidos.");
@@ -179,7 +189,7 @@ class CatalogoController extends Controller
 
         FichaTecnica::delete($idEstudio);
 
-        $url = 'index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo;
+        $url = 'index.php?controller=catalogo&action=editDocumentos&id=' . $idCatalogo;
         if ($selectedYear !== null) {
             $url .= '&year=' . $selectedYear;
         }
@@ -201,7 +211,7 @@ class CatalogoController extends Controller
 
         TerminosReferencia::delete($idTermino);
 
-        $url = 'index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo;
+        $url = 'index.php?controller=catalogo&action=editDocumentos&id=' . $idCatalogo;
         if ($selectedYear !== null) {
             $url .= '&year=' . $selectedYear;
         }
@@ -231,10 +241,20 @@ class CatalogoController extends Controller
             die("Documento no encontrado.");
         }
 
-        header('Content-Type: ' . $documento['TipoMime']);
-        header('Content-Disposition: attachment; filename="' . urlencode($documento['NombreDocumento']) . '"');
-        header('Content-Length: ' . strlen($documento['Documento']));
-        echo $documento['Documento'];
+        // El campo RutaDocumento contiene la ruta relativa al archivo
+        $rutaArchivo = __DIR__ . '/../../' . $documento['RutaDocumento'];
+        
+        if (!file_exists($rutaArchivo)) {
+            die("Archivo no encontrado en el servidor.");
+        }
+
+        // Obtener el nombre del archivo
+        $nombreArchivo = basename($rutaArchivo);
+        
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . urlencode($nombreArchivo) . '"');
+        header('Content-Length: ' . filesize($rutaArchivo));
+        readfile($rutaArchivo);
         exit;
     }
 }
