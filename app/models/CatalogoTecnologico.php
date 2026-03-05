@@ -52,7 +52,26 @@ class CatalogoTecnologico
             $sql .= " AND ft2.Anio = ?";
         }
 
-        $sql .= ") AS TotalEstudios
+        $sql .= ") AS TotalEstudios,
+                (SELECT COUNT(*) FROM TerminosReferencia tr2
+                 WHERE tr2.IdCatalogoTecnologico = ct.Id";
+
+        if ($year) {
+            $sql .= " AND tr2.Anio = ?";
+        }
+
+        $sql .= ") AS TotalTDR,
+                CASE 
+                    WHEN (SELECT COUNT(*) FROM TerminosReferencia tr3
+                          WHERE tr3.IdCatalogoTecnologico = ct.Id";
+
+        if ($year) {
+            $sql .= " AND tr3.Anio = ?";
+        }
+
+        $sql .= ") > 0 THEN 'Completo'
+                    ELSE 'Incompleto'
+                END AS Estado
             FROM CatalogoTecnologico ct
             LEFT JOIN CodigosAgrupados ca ON ct.Id = ca.IdCatalogoTecnologico
             WHERE EXISTS (
@@ -74,7 +93,7 @@ class CatalogoTecnologico
 
         $stmt = $conn->prepare($sql);
         if ($year) {
-            $stmt->execute([$year, $year]);
+            $stmt->execute([$year, $year, $year, $year]);
         } else {
             $stmt->execute();
         }
