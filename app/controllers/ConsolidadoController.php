@@ -12,9 +12,9 @@ class ConsolidadoController extends Controller
         $conn = Database::connect();
 
         // obtener años disponibles y seleccionar el más reciente por defecto
-        $stmtYears = $conn->query("SELECT DISTINCT AnioFiscal FROM HojaSiga ORDER BY AnioFiscal DESC");
+        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM Requerimiento ORDER BY Anio DESC");
         $rowsYears = $stmtYears->fetchAll();
-        $years = array_map('intval', array_column($rowsYears, 'AnioFiscal'));
+        $years = array_map('intval', array_column($rowsYears, 'Anio'));
 
         $selectedYear = null;
         if (!empty($years)) {
@@ -34,22 +34,22 @@ class ConsolidadoController extends Controller
                 ct.Id,
                 ct.NombreGenerico,
                 cc.Id AS IdCentroCosto,
-                cc.NombreCentro,
+                cc.NombreCentroCosto,
                 cc.Siglas,
                 SUM(CAST(dr.Cantidad AS INT)) AS TotalEquipo
             FROM DetalleRequerimiento dr
-            INNER JOIN HojaSiga hs ON dr.IdHojaSiga = hs.Id
-            INNER JOIN CentroCosto cc ON hs.IdCentroCosto = cc.Id
-            INNER JOIN CatalogoTecnologico ct ON dr.IdCatalogoTec = ct.Id
+            INNER JOIN Requerimiento r ON dr.IdRequerimiento = r.Id
+            INNER JOIN CentroCosto cc ON r.IdCentroCosto = cc.Id
+            INNER JOIN CatalogoTecnologico ct ON dr.IdCatalogoTecnologico = ct.Id
         ";
 
         if ($selectedYear !== null) {
-            $sql .= " WHERE hs.AnioFiscal = ? ";
+            $sql .= " WHERE r.Anio = ? ";
         }
 
         $sql .= "
-            GROUP BY ct.Id, ct.NombreGenerico, cc.Id, cc.NombreCentro, cc.Siglas
-            ORDER BY ct.NombreGenerico, cc.NombreCentro
+            GROUP BY ct.Id, ct.NombreGenerico, cc.Id, cc.NombreCentroCosto, cc.Siglas
+            ORDER BY ct.NombreGenerico, cc.NombreCentroCosto
         ";
 
         $stmt = $conn->prepare($sql);
@@ -67,7 +67,7 @@ class ConsolidadoController extends Controller
 
         foreach ($datos as $row) {
             $equipo = $row['NombreGenerico'];
-            $centro = $row['NombreCentro'];
+            $centro = $row['NombreCentroCosto'];
             $siglas = $row['Siglas'];
             $idCentro = $row['IdCentroCosto'];
             $cantidad = $row['TotalEquipo'];

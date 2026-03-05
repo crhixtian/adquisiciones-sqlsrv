@@ -48,7 +48,7 @@
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-end">
-                                    <a href="index.php?controller=hoja&action=show&id=<?= $row['Id'] ?>" class="btn btn-sm btn-outline-primary">
+                                    <a href="index.php?controller=requerimiento&action=show&id=<?= $row['Id'] ?>" class="btn btn-sm btn-outline-primary">
                                         Ver
                                     </a>
                                     <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal<?= $row['Id'] ?>">
@@ -70,7 +70,7 @@
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                                            <a href="index.php?controller=hoja&action=delete&id=<?= $row['Id'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-danger">Sí, eliminar</a>
+                                            <a href="index.php?controller=requerimiento&action=delete&id=<?= $row['Id'] ?><?= $selectedYear !== null ? '&year=' . (int)$selectedYear : '' ?>" class="btn btn-danger">Sí, eliminar</a>
                                         </div>
                                     </div>
                                 </div>
@@ -95,7 +95,7 @@
                 <h5 class="modal-title">Nuevo Pedido de Compra</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form method="post" action="index.php?controller=hoja&action=store">
+            <form method="post" action="index.php?controller=requerimiento&action=store">
                 <div class="modal-body">
                     <div class="mb-3">
                         <label class="form-label">Dirección Solicitante</label>

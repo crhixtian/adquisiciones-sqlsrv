@@ -7,7 +7,7 @@ require_once __DIR__ . '/../models/CentroCosto.php';
 require_once __DIR__ . '/../models/DetalleRequerimiento.php';
 require_once __DIR__ . '/../models/CatalogoTecnologico.php';
 
-class HojaController extends Controller
+class RequerimientoController extends Controller
 {
     // muestra todos los requerimientos junto con los centros de costo disponibles
     public function index()
@@ -41,7 +41,7 @@ class HojaController extends Controller
     {
         try {
             Requerimiento::create($_POST);
-            $this->redirect('index.php?controller=hoja&action=index');
+            $this->redirect('index.php?controller=requerimiento&action=index');
         } catch (Exception $e) {
             // SQLSRV uses SQLSTATE codes; 23000 indica violación de clave única
             if ((string)$e->getCode() === '23000') {
@@ -63,7 +63,7 @@ class HojaController extends Controller
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cambiar_estado'])) {
             $nuevoEstado = isset($_POST['estado']) && (int)$_POST['estado'] === 1 ? 1 : 0;
             Requerimiento::updateEstado($id, $nuevoEstado);
-            $this->redirect('index.php?controller=hoja&action=show&id=' . urlencode($id));
+            $this->redirect('index.php?controller=requerimiento&action=show&id=' . urlencode($id));
         }
         
         $requerimiento = Requerimiento::find($id);
@@ -87,7 +87,7 @@ class HojaController extends Controller
 
         Requerimiento::delete($_GET['id']);
 
-        $url = 'index.php?controller=hoja&action=index';
+        $url = 'index.php?controller=requerimiento&action=index';
         if ($selectedYear !== null) {
             $url .= '&year=' . $selectedYear;
         }

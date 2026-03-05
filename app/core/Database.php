@@ -101,7 +101,7 @@ class Database {
     public static function connect() {
         if (self::$instance === null) {
             $server   = "34.31.255.131";
-            $database = "AdquisicionesPech";
+            $database = "Adquisiciones";
             $username = "sqlserver";
             $password = "Pech206..";
 

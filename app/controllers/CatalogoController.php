@@ -4,19 +4,20 @@
 require_once __DIR__ . '/../core/Controller.php';
 require_once __DIR__ . '/../models/CatalogoTecnologico.php';
 require_once __DIR__ . '/../core/Database.php';
-require_once __DIR__ . '/../models/EstudioMercado.php';
+require_once __DIR__ . '/../models/FichaTecnica.php';
+require_once __DIR__ . '/../models/TerminosReferencia.php';
 
 class CatalogoController extends Controller
 {
-    // lista los registros de tecnologias con conteo de fichas tecnicas (PDF)
+    // lista los registros de tecnologias con conteo de fichas tecnicas
     public function index()
     {
-        // obtener años desde HojaSiga
+        // obtener años desde Requerimiento
         $conn = Database::connect();
-        $stmtYears = $conn->query("SELECT DISTINCT AnioFiscal FROM HojaSiga ORDER BY AnioFiscal DESC");
+        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM Requerimiento ORDER BY Anio DESC");
         $rows = $stmtYears->fetchAll();
-        // obtener únicamente la primera columna (AnioFiscal) como arreglo simple
-        $years = array_column($rows, 'AnioFiscal');
+        // obtener únicamente la primera columna (Anio) como arreglo simple
+        $years = array_column($rows, 'Anio');
 
         $selectedYear = null;
         $hasRequest = isset($_GET['year']);
@@ -40,7 +41,7 @@ class CatalogoController extends Controller
         $this->render('catalogo/index', ['registros' => $registros, 'years' => $years, 'selectedYear' => $selectedYear]);
     }
 
-    // muestra formulario para editar fichas tecnicas (PDF) de un registro de tecnologia
+    // muestra formulario para editar fichas tecnicas de un registro de tecnologia
     public function editEstudios()
     {
         if (!isset($_GET['id'])) die("ID no válido.");
@@ -60,65 +61,111 @@ class CatalogoController extends Controller
             $selectedYear = (int) $years[0];
         }
 
-        $estudios = EstudioMercado::getByCatalogo($id, $selectedYear);
+        $fichasTecnicas = FichaTecnica::getByCatalogo($id, $selectedYear);
+        $terminosReferencia = TerminosReferencia::getByCatalogo($id, $selectedYear);
 
         $pedidosCompra = CatalogoTecnologico::pedidosCompraByCatalogo($id, $selectedYear);
-        $this->render('catalogo/edit_estudios', [
+        $this->render('catalogo/edit_documentos', [
             'catalogo' => $catalogo,
-            'estudios' => $estudios,
+            'fichasTecnicas' => $fichasTecnicas,
+            'terminosReferencia' => $terminosReferencia,
             'pedidosCompra' => $pedidosCompra,
             'years' => $years,
             'selectedYear' => $selectedYear
         ]);
     }
 
-    // procesa carga de nuevo archivo PDF
+    // procesa carga de nueva ficha técnica (PDF como VARBINARY)
     public function uploadEstudio()
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $idCatalogo = (int) $_POST['IdCatalogoTec'];
+            $idCatalogo = (int) $_POST['IdCatalogoTecnologico'];
             $marca = trim($_POST['Marca']);
             $modelo = trim($_POST['Modelo']);
-            $anioFiscal = isset($_POST['AnioFiscal']) && $_POST['AnioFiscal'] !== '' ? (int) $_POST['AnioFiscal'] : null;
+            $anio = isset($_POST['Anio']) && $_POST['Anio'] !== '' ? (int) $_POST['Anio'] : null;
 
-            if ($anioFiscal === null) {
-                die("Debe seleccionar un año fiscal para la ficha técnica.");
+            if ($anio === null) {
+                die("Debe seleccionar un año para la ficha técnica.");
             }
 
             $years = CatalogoTecnologico::pedidosCompraYearsByCatalogo($idCatalogo);
-            if (!in_array($anioFiscal, $years, true)) {
-                die("El año fiscal seleccionado no es válido para este catálogo.");
+            if (!in_array($anio, $years, true)) {
+                die("El año seleccionado no es válido para este catálogo.");
             }
 
             if (!isset($_FILES['Documento']) || $_FILES['Documento']['error'] !== 0) {
                 die("Error al subir archivo.");
             }
 
-            $directorio = __DIR__ . '/../../uploads/';
-            if (!is_dir($directorio)) {
-                mkdir($directorio, 0777, true);
+            // Leer el archivo en VARBINARY
+            $rutaTemp = $_FILES['Documento']['tmp_name'];
+            $nombreArchivo = basename($_FILES['Documento']['name']);
+            $tipoMime = $_FILES['Documento']['type'] ?: 'application/octet-stream';
+            
+            $contenidoArchivo = file_get_contents($rutaTemp);
+            if ($contenidoArchivo === false) {
+                die("No se pudo leer el archivo.");
             }
 
-            $nombreArchivo = time() . "_" . basename($_FILES["Documento"]["name"]);
-            $rutaFinal = "uploads/" . $nombreArchivo;
-
-            if (!move_uploaded_file($_FILES["Documento"]["tmp_name"], __DIR__ . '/../../' . $rutaFinal)) {
-                die("No se pudo guardar el archivo.");
-            }
-
-            EstudioMercado::create([
-                'IdCatalogoTec' => $idCatalogo,
+            FichaTecnica::create([
+                'IdCatalogoTecnologico' => $idCatalogo,
                 'Marca' => $marca,
                 'Modelo' => $modelo,
-                'AnioFiscal' => $anioFiscal,
-                'RutaDocumento' => $rutaFinal
+                'Anio' => $anio,
+                'NombreDocumento' => $nombreArchivo,
+                'TipoMime' => $tipoMime,
+                'Documento' => $contenidoArchivo
             ]);
 
-            $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo . '&year=' . $anioFiscal);
+            $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo . '&year=' . $anio);
         }
     }
 
-    // elimina un item y su documento físico si existe (PDF)
+    // procesa carga de nuevo término de referencia (PDF como VARBINARY)
+    public function uploadTerminosReferencia()
+    {
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $idCatalogo = (int) $_POST['IdCatalogoTecnologico'];
+            $codigoTDR = trim($_POST['CodigoTDR']);
+            $anio = isset($_POST['Anio']) && $_POST['Anio'] !== '' ? (int) $_POST['Anio'] : null;
+
+            if ($anio === null) {
+                die("Debe seleccionar un año para el término de referencia.");
+            }
+
+            $years = CatalogoTecnologico::pedidosCompraYearsByCatalogo($idCatalogo);
+            if (!in_array($anio, $years, true)) {
+                die("El año seleccionado no es válido para este catálogo.");
+            }
+
+            if (!isset($_FILES['Documento']) || $_FILES['Documento']['error'] !== 0) {
+                die("Error al subir archivo.");
+            }
+
+            // Leer el archivo en VARBINARY
+            $rutaTemp = $_FILES['Documento']['tmp_name'];
+            $nombreArchivo = basename($_FILES['Documento']['name']);
+            $tipoMime = $_FILES['Documento']['type'] ?: 'application/octet-stream';
+            
+            $contenidoArchivo = file_get_contents($rutaTemp);
+            if ($contenidoArchivo === false) {
+                die("No se pudo leer el archivo.");
+            }
+
+            TerminosReferencia::create([
+                'IdCatalogoTecnologico' => $idCatalogo,
+                'CodigoTDR' => $codigoTDR,
+                'Anio' => $anio,
+                'NombreDocumento' => $nombreArchivo,
+                'TipoMime' => $tipoMime,
+                'Documento' => $contenidoArchivo
+            ]);
+
+            $this->redirect('index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo . '&year=' . $anio);
+        }
+    }
+
+    // elimina una ficha técnica
     public function deleteEstudio()
     {
         if (!isset($_GET['eliminar']) || !isset($_GET['id'])) {
@@ -130,11 +177,7 @@ class CatalogoController extends Controller
             ? (int) $_GET['year']
             : null;
 
-        $estudio = EstudioMercado::find($idEstudio);
-        if ($estudio && file_exists(__DIR__ . '/../../' . $estudio['RutaDocumento'])) {
-            unlink(__DIR__ . '/../../' . $estudio['RutaDocumento']);
-        }
-        EstudioMercado::delete($idEstudio);
+        FichaTecnica::delete($idEstudio);
 
         $url = 'index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo;
         if ($selectedYear !== null) {
@@ -142,5 +185,56 @@ class CatalogoController extends Controller
         }
 
         $this->redirect($url);
+    }
+
+    // elimina un término de referencia
+    public function deleteTerminosReferencia()
+    {
+        if (!isset($_GET['eliminar']) || !isset($_GET['id'])) {
+            die("Parámetros inválidos.");
+        }
+        $idTermino = (int) $_GET['eliminar'];
+        $idCatalogo = (int) $_GET['id'];
+        $selectedYear = isset($_GET['year']) && $_GET['year'] !== '' && $_GET['year'] !== 'all'
+            ? (int) $_GET['year']
+            : null;
+
+        TerminosReferencia::delete($idTermino);
+
+        $url = 'index.php?controller=catalogo&action=editEstudios&id=' . $idCatalogo;
+        if ($selectedYear !== null) {
+            $url .= '&year=' . $selectedYear;
+        }
+
+        $this->redirect($url);
+    }
+
+    // descarga un documento (ficha técnica o término de referencia)
+    public function downloadDocumento()
+    {
+        if (!isset($_GET['tipo']) || !isset($_GET['id'])) {
+            die("Parámetros inválidos.");
+        }
+        
+        $tipo = $_GET['tipo']; // 'ficha' o 'termino'
+        $id = (int) $_GET['id'];
+
+        if ($tipo === 'ficha') {
+            $documento = FichaTecnica::getDocumento($id);
+        } elseif ($tipo === 'termino') {
+            $documento = TerminosReferencia::getDocumento($id);
+        } else {
+            die("Tipo de documento inválido.");
+        }
+
+        if (!$documento) {
+            die("Documento no encontrado.");
+        }
+
+        header('Content-Type: ' . $documento['TipoMime']);
+        header('Content-Disposition: attachment; filename="' . urlencode($documento['NombreDocumento']) . '"');
+        header('Content-Length: ' . strlen($documento['Documento']));
+        echo $documento['Documento'];
+        exit;
     }
 }

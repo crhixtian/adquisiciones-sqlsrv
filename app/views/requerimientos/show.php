@@ -11,7 +11,7 @@ $estadoClase = $estadoActual === 1 ? 'bg-green text-white' : 'bg-yellow text-dar
             <h3 class="card-title">Pedido de Compra: <?= htmlspecialchars($hoja['NroPedidoCompra']) ?></h3>
             <div class="card-actions d-flex align-items-center gap-2">
                 <span class="badge <?= $estadoClase ?>"><?= $estadoTexto ?></span>
-                <form method="post" action="index.php?controller=hoja&action=show&id=<?= urlencode($hoja['Id']) ?>" class="m-0">
+                <form method="post" action="index.php?controller=requerimiento&action=show&id=<?= urlencode($hoja['Id']) ?>" class="m-0">
                     <input type="hidden" name="estado" value="<?= $estadoActual === 1 ? 0 : 1 ?>">
                     <button type="submit" name="cambiar_estado" value="1" class="btn btn-sm btn-outline-primary">
                         Marcar como <?= $estadoActual === 1 ? 'Incompleto' : 'Completo' ?>
@@ -122,7 +122,7 @@ $estadoClase = $estadoActual === 1 ? 'bg-green text-white' : 'bg-yellow text-dar
             </table>
         </div>
         <div class="card-footer">
-            <a href="index.php?controller=hoja&action=index" class="btn btn-secondary">Volver</a>
+            <a href="index.php?controller=requerimiento&action=index" class="btn btn-secondary">Volver</a>
         </div>
     </div>
 </div>

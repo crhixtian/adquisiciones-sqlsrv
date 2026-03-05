@@ -10,19 +10,19 @@ class CatalogoTecnologico
     {
         $conn = Database::connect();
         $stmt = $conn->query(
-            "SELECT Id, Tecnologia, NombreGenerico
+            "SELECT Id, CategoriaTecnologica, NombreGenerico
              FROM CatalogoTecnologico
              WHERE Activo = 1
              ORDER BY
-                CASE WHEN Tecnologia LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
-                TRY_CAST(SUBSTRING(Tecnologia, 2, LEN(Tecnologia)) AS INT),
-                Tecnologia,
+                CASE WHEN CategoriaTecnologica LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
+                TRY_CAST(SUBSTRING(CategoriaTecnologica, 2, LEN(CategoriaTecnologica)) AS INT),
+                CategoriaTecnologica,
                 NombreGenerico"
         );
         return $stmt->fetchAll();
     }
 
-    // obtiene registros junto con conteo de fichas tecnicas (PDF) para un año
+    // obtiene registros junto con conteo de fichas tecnicas para un año
     public static function withEstudiosCount($year = null)
     {
         $conn = Database::connect();
@@ -31,37 +31,37 @@ class CatalogoTecnologico
                 ct.Id AS IdCatalogo,
                 dr.CodigoSiga,
                 ct.NombreGenerico,
-                ct.Tecnologia,
-                COUNT(em.Id) AS TotalEstudios
+                ct.CategoriaTecnologica,
+                COUNT(ft.Id) AS TotalEstudios
             FROM DetalleRequerimiento dr
             INNER JOIN CatalogoTecnologico ct
-                ON ct.Id = dr.IdCatalogoTec
-            INNER JOIN HojaSiga hs
-                ON dr.IdHojaSiga = hs.Id
+                ON ct.Id = dr.IdCatalogoTecnologico
+            INNER JOIN Requerimiento r
+                ON dr.IdRequerimiento = r.Id
         ";
 
         if ($year) {
-            $sql .= " LEFT JOIN EstudioMercado em
-                ON em.IdCatalogoTec = ct.Id
-               AND em.AnioFiscal = ? ";
+            $sql .= " LEFT JOIN FichaTecnica ft
+                ON ft.IdCatalogoTecnologico = ct.Id
+               AND ft.Anio = ? ";
         } else {
-            $sql .= " LEFT JOIN EstudioMercado em
-                ON em.IdCatalogoTec = ct.Id ";
+            $sql .= " LEFT JOIN FichaTecnica ft
+                ON ft.IdCatalogoTecnologico = ct.Id ";
         }
 
         if ($year) {
-            $sql .= " WHERE hs.AnioFiscal = ? ";
+            $sql .= " WHERE r.Anio = ? ";
         }
 
         $sql .= " GROUP BY 
                 ct.Id,
                 dr.CodigoSiga,
                 ct.NombreGenerico,
-                ct.Tecnologia
+                ct.CategoriaTecnologica
             ORDER BY
-                CASE WHEN ct.Tecnologia LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
-                TRY_CAST(SUBSTRING(ct.Tecnologia, 2, LEN(ct.Tecnologia)) AS INT),
-                ct.Tecnologia,
+                CASE WHEN ct.CategoriaTecnologica LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
+                TRY_CAST(SUBSTRING(ct.CategoriaTecnologica, 2, LEN(ct.CategoriaTecnologica)) AS INT),
+                ct.CategoriaTecnologica,
                 dr.CodigoSiga";
 
         $stmt = $conn->prepare($sql);
@@ -78,7 +78,7 @@ class CatalogoTecnologico
     public static function find($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT Id, Tecnologia, NombreGenerico FROM CatalogoTecnologico WHERE Id = ?");
+        $stmt = $conn->prepare("SELECT Id, CategoriaTecnologica, NombreGenerico FROM CatalogoTecnologico WHERE Id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -88,24 +88,24 @@ class CatalogoTecnologico
     {
         $conn = Database::connect();
         $sql = "SELECT DISTINCT
-                    hs.Id,
-                    hs.NPedidoCompra,
-                    hs.AnioFiscal,
-                    cc.NombreCentro
+                    r.Id,
+                    r.NroPedidoCompra,
+                    r.Anio,
+                    cc.NombreCentroCosto
              FROM DetalleRequerimiento dr
-             INNER JOIN HojaSiga hs
-                ON dr.IdHojaSiga = hs.Id
+             INNER JOIN Requerimiento r
+                ON dr.IdRequerimiento = r.Id
              INNER JOIN CentroCosto cc
-                ON hs.IdCentroCosto = cc.Id
-             WHERE dr.IdCatalogoTec = ?";
+                ON r.IdCentroCosto = cc.Id
+             WHERE dr.IdCatalogoTecnologico = ?";
 
         $params = [$idCatalogo];
         if ($year !== null) {
-            $sql .= " AND hs.AnioFiscal = ?";
+            $sql .= " AND r.Anio = ?";
             $params[] = $year;
         }
 
-        $sql .= " ORDER BY hs.AnioFiscal DESC, hs.NPedidoCompra ASC";
+        $sql .= " ORDER BY r.Anio DESC, r.NroPedidoCompra ASC";
 
         $stmt = $conn->prepare($sql);
         $stmt->execute($params);
@@ -117,15 +117,15 @@ class CatalogoTecnologico
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "SELECT DISTINCT hs.AnioFiscal
+            "SELECT DISTINCT r.Anio
              FROM DetalleRequerimiento dr
-             INNER JOIN HojaSiga hs
-                ON dr.IdHojaSiga = hs.Id
-             WHERE dr.IdCatalogoTec = ?
-             ORDER BY hs.AnioFiscal DESC"
+             INNER JOIN Requerimiento r
+                ON dr.IdRequerimiento = r.Id
+             WHERE dr.IdCatalogoTecnologico = ?
+             ORDER BY r.Anio DESC"
         );
         $stmt->execute([$idCatalogo]);
         $rows = $stmt->fetchAll();
-        return array_map('intval', array_column($rows, 'AnioFiscal'));
+        return array_map('intval', array_column($rows, 'Anio'));
     }
 }

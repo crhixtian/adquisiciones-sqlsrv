@@ -34,7 +34,7 @@
                     <?php foreach ($registros as $row): ?>
                         <tr>
                             <td><span class="badge bg-blue-lt"><?= htmlspecialchars($row['CodigoSiga']) ?></span></td>
-                            <td><?= htmlspecialchars($row['Tecnologia']) ?></td>
+                            <td><?= htmlspecialchars($row['CategoriaTecnologica']) ?></td>
                             <td><?= htmlspecialchars($row['NombreGenerico']) ?></td>
                             <td>
                                 <?php if ($row['TotalEstudios'] >= 4): ?>

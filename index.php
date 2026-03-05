@@ -11,7 +11,7 @@ require_once __DIR__ . '/app/core/Controller.php';
 require_once __DIR__ . '/app/core/Database.php';
 
 // determine controller and action from query string
-$controllerName = isset($_GET['controller']) ? ucfirst($_GET['controller']) . 'Controller' : 'HojaController';
+$controllerName = isset($_GET['controller']) ? ucfirst($_GET['controller']) . 'Controller' : 'RequerimientoController';
 $action = isset($_GET['action']) ? $_GET['action'] : 'index';
 
 $controllerFile = __DIR__ . "/app/controllers/{$controllerName}.php";

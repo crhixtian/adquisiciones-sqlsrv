@@ -38,7 +38,7 @@
                 </div>
             </div>
             <div class="card-footer text-end">
-                <a href="index.php?controller=hoja&action=show&id=<?= $detalle['IdRequerimiento'] ?>" class="btn btn-secondary">Cancelar</a>
+                <a href="index.php?controller=requerimiento&action=show&id=<?= $detalle['IdRequerimiento'] ?>" class="btn btn-secondary">Cancelar</a>
                 <button type="submit" class="btn btn-primary">Actualizar Ítem</button>
             </div>
         </form>

@@ -9,7 +9,7 @@ class CentroCosto
     public static function all()
     {
         $conn = Database::connect();
-        $stmt = $conn->query("SELECT Id, NombreCentro FROM CentroCosto ORDER BY NombreCentro");
+        $stmt = $conn->query("SELECT Id, NombreCentroCosto FROM CentroCosto WHERE Activo = 1 ORDER BY NombreCentroCosto");
         return $stmt->fetchAll();
     }
 }
