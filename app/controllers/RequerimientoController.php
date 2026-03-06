@@ -29,7 +29,7 @@ class RequerimientoController extends Controller
         $requerimientos = Requerimiento::all($selectedYear);
         $centros = CentroCosto::all();
         $this->render('requerimientos/index', [
-            'hojas' => $requerimientos,
+            'requerimientos' => $requerimientos,
             'centros' => $centros,
             'years' => $years,
             'selectedYear' => $selectedYear,

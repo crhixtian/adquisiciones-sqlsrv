@@ -5,7 +5,7 @@
         <h3 class="mb-1">Fichas Técnicas y Términos de Referencia</h3>
         <div>
             <span class="badge bg-blue-lt">
-                <?= htmlspecialchars($catalogo['CategoriaTecnologica']) ?>
+                <?= htmlspecialchars($catalogo['Codigo']) ?>
             </span>
             <?= htmlspecialchars($catalogo['NombreGenerico']) ?>
         </div>
@@ -175,7 +175,7 @@
                             <thead>
                                 <tr>
                                     <th>Año</th>
-                                    <th>Código TDR</th>
+                                    <th>Código FT</th>
                                     <th>Documento</th>
                                     <th>Fecha</th>
                                     <th class="text-end">Acción</th>
@@ -186,7 +186,7 @@
                                     <?php foreach ($terminosReferencia as $t): ?>
                                         <tr>
                                             <td><?= isset($t['Anio']) ? (int)$t['Anio'] : '-' ?></td>
-                                            <td><?= htmlspecialchars($t['CodigoTDR']) ?></td>
+                                            <td><?= htmlspecialchars($t['CodigoFT']) ?></td>
                                             <td>
                                                 <a href="index.php?controller=catalogo&action=downloadDocumento&tipo=termino&id=<?= $t['Id'] ?>" class="btn btn-sm btn-outline-primary">
                                                     <?= htmlspecialchars(basename($t['RutaDocumento'])) ?>
@@ -226,13 +226,13 @@
                         <hr class="my-4">
                         <h5 class="mb-3">Agregar Nuevo Término de Referencia</h5>
                         <?php
-                        $codigoTdrSugerido = '';
+                        $codigoFtSugerido = '';
                         if ($selectedYear !== null) {
-                            $categoriaTecnologica = strtoupper(trim((string)($catalogo['CategoriaTecnologica'] ?? '')));
-                            $codigoCategoria = preg_match('/^T\d+$/', $categoriaTecnologica)
-                                ? $categoriaTecnologica
+                            $codigoTecnologico = strtoupper(trim((string)($catalogo['Codigo'] ?? '')));
+                            $codigoNormalizado = preg_match('/^T\d+$/', $codigoTecnologico)
+                                ? $codigoTecnologico
                                 : 'T1';
-                            $codigoTdrSugerido = 'FT-' . $codigoCategoria . '-' . (int)$selectedYear;
+                            $codigoFtSugerido = 'FT-' . $codigoNormalizado . '-' . (int)$selectedYear;
                         }
                         ?>
                         <form method="POST" action="index.php?controller=catalogo&action=uploadTerminosReferencia" enctype="multipart/form-data">
@@ -240,8 +240,8 @@
                             <input type="hidden" name="Anio" value="<?= $selectedYear !== null ? (int)$selectedYear : '' ?>">
                             <div class="row g-3">
                                 <div class="col-md-4">
-                                    <label class="form-label">Código TDR</label>
-                                    <input type="text" name="CodigoTDR" class="form-control" value="<?= htmlspecialchars($codigoTdrSugerido) ?>" placeholder="TDR-<?= htmlspecialchars(strtoupper((string)($catalogo['CategoriaTecnologica'] ?? 'T1'))) ?>-<?= $selectedYear !== null ? (int)$selectedYear : date('Y') ?>" required>
+                                    <label class="form-label">Código FT</label>
+                                    <input type="text" name="CodigoFT" class="form-control" value="<?= htmlspecialchars($codigoFtSugerido) ?>" placeholder="FT-<?= htmlspecialchars(strtoupper((string)($catalogo['Codigo'] ?? 'T1'))) ?>-<?= $selectedYear !== null ? (int)$selectedYear : date('Y') ?>" required>
                                 </div>
                                 <div class="col-md-8">
                                     <label class="form-label">Documento PDF</label>

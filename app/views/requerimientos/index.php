@@ -1,4 +1,4 @@
-<?php // vista de listado de hojas SIGA, incluye tabla y modales 
+<?php // vista de listado de requerimientos SIGA, incluye tabla y modales 
 ?>
 <div class="col-12">
     <div class="card">
@@ -6,7 +6,7 @@
             <h3 class="card-title">Lista de Pedidos de Compra</h3>
             <div class="card-actions d-flex align-items-center gap-2">
                 <form method="get" action="index.php" class="d-flex align-items-center">
-                    <input type="hidden" name="controller" value="hoja">
+                    <input type="hidden" name="controller" value="requerimiento">
                     <input type="hidden" name="action" value="index">
                     <label class="me-2 mb-0">Año:</label>
                     <select name="year" class="form-select form-select-sm" style="width:120px;" onchange="this.form.submit()">
@@ -19,7 +19,7 @@
                     </select>
                     <noscript><button class="btn btn-sm btn-primary ms-2">Filtrar</button></noscript>
                 </form>
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createHojaModal">+ Nuevo</button>
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRequerimientoModal">+ Nuevo</button>
             </div>
         </div>
         <div class="table-responsive">
@@ -34,8 +34,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <?php if (count($hojas) > 0): ?>
-                        <?php foreach ($hojas as $row): ?>
+                    <?php if (count($requerimientos) > 0): ?>
+                        <?php foreach ($requerimientos as $row): ?>
                             <tr>
                                 <td><?= htmlspecialchars($row['NroPedidoCompra']) ?></td>
                                 <td><?= htmlspecialchars($row['NombreCentroCosto']) ?></td>
@@ -87,8 +87,8 @@
     </div>
 </div>
 
-<!-- Modal para crear nueva hoja -->
-<div class="modal modal-blur fade" id="createHojaModal" tabindex="-1" role="dialog" aria-hidden="true">
+<!-- Modal para crear nuevo requerimiento -->
+<div class="modal modal-blur fade" id="createRequerimientoModal" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">

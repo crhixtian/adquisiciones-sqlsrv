@@ -12,16 +12,16 @@ class FichaTecnica
 
         if ($year === null) {
             $stmt = $conn->prepare(
-                "SELECT Id, Marca, Modelo, Anio, RutaDocumento, FechaRegistro
-                 FROM FichaTecnica
+                 "SELECT Id, Marca, Modelo, Anio, Estado, RutaDocumento, FechaRegistro
+                  FROM adquisiciones.FichaTecnicaReferencia
                  WHERE IdCatalogoTecnologico = ?
                  ORDER BY Anio DESC, FechaRegistro DESC"
             );
             $stmt->execute([$idCatalogo]);
         } else {
             $stmt = $conn->prepare(
-                "SELECT Id, Marca, Modelo, Anio, RutaDocumento, FechaRegistro
-                 FROM FichaTecnica
+                 "SELECT Id, Marca, Modelo, Anio, Estado, RutaDocumento, FechaRegistro
+                  FROM adquisiciones.FichaTecnicaReferencia
                  WHERE IdCatalogoTecnologico = ? AND Anio = ?
                  ORDER BY FechaRegistro DESC"
             );
@@ -35,8 +35,8 @@ class FichaTecnica
     public static function create($data)
     {
         $conn = Database::connect();
-        $sql = "INSERT INTO FichaTecnica
-                (IdCatalogoTecnologico, Marca, Modelo, Anio, RutaDocumento)
+        $sql = "INSERT INTO adquisiciones.FichaTecnicaReferencia
+            (IdCatalogoTecnologico, Marca, Modelo, Anio, RutaDocumento)
                 VALUES (?, ?, ?, ?, ?)";
         
         $stmt = $conn->prepare($sql);
@@ -57,7 +57,7 @@ class FichaTecnica
     public static function delete($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("DELETE FROM FichaTecnica WHERE Id = ?");
+        $stmt = $conn->prepare("DELETE FROM adquisiciones.FichaTecnicaReferencia WHERE Id = ?");
         $stmt->execute([$id]);
     }
 
@@ -66,8 +66,8 @@ class FichaTecnica
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "SELECT Id, IdCatalogoTecnologico, Marca, Modelo, Anio, RutaDocumento, FechaRegistro
-             FROM FichaTecnica 
+              "SELECT Id, IdCatalogoTecnologico, Marca, Modelo, Anio, Estado, RutaDocumento, FechaRegistro
+               FROM adquisiciones.FichaTecnicaReferencia 
              WHERE Id = ?"
         );
         $stmt->execute([$id]);
@@ -78,7 +78,7 @@ class FichaTecnica
     public static function getDocumento($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT RutaDocumento FROM FichaTecnica WHERE Id = ?");
+        $stmt = $conn->prepare("SELECT RutaDocumento FROM adquisiciones.FichaTecnicaReferencia WHERE Id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }

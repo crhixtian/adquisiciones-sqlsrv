@@ -24,7 +24,7 @@
                 <thead>
                     <tr>
                         <th>Código</th>
-                        <th>Tecnología</th>
+                        <th>Código Tecnológico</th>
                         <th>Nombre Genérico</th>
                         <th>Estado</th>
                         <th class="text-end">Acciones</th>
@@ -34,7 +34,7 @@
                     <?php foreach ($registros as $row): ?>
                         <tr>
                             <td><span class="badge bg-blue-lt"><?= htmlspecialchars($row['CodigoSiga']) ?></span></td>
-                            <td><?= htmlspecialchars($row['CategoriaTecnologica']) ?></td>
+                            <td><?= htmlspecialchars($row['Codigo']) ?></td>
                             <td><?= htmlspecialchars($row['NombreGenerico']) ?></td>
                             <td>
                                 <?php if ($row['Estado'] === 'Completo'): ?>

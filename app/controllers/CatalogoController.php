@@ -14,7 +14,7 @@ class CatalogoController extends Controller
     {
         // obtener años desde Requerimiento
         $conn = Database::connect();
-        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM Requerimiento ORDER BY Anio DESC");
+        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM adquisiciones.Requerimiento ORDER BY Anio DESC");
         $rows = $stmtYears->fetchAll();
         // obtener únicamente la primera columna (Anio) como arreglo simple
         $years = array_column($rows, 'Anio');
@@ -136,7 +136,7 @@ class CatalogoController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $idCatalogo = (int) $_POST['IdCatalogoTecnologico'];
-            $codigoTDR = trim($_POST['CodigoTDR']);
+            $codigoFT = trim($_POST['CodigoFT']);
             $anio = isset($_POST['Anio']) && $_POST['Anio'] !== '' ? (int) $_POST['Anio'] : null;
 
             if ($anio === null) {
@@ -176,7 +176,7 @@ class CatalogoController extends Controller
 
             TerminosReferencia::create([
                 'IdCatalogoTecnologico' => $idCatalogo,
-                'CodigoTDR' => $codigoTDR,
+                'CodigoFT' => $codigoFT,
                 'Anio' => $anio,
                 'RutaDocumento' => $rutaRelativa
             ]);

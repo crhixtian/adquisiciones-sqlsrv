@@ -10,8 +10,8 @@ class Requerimiento
     {
         $conn = Database::connect();
         $sql = "SELECT r.Id, r.NroPedidoCompra, r.Anio, r.FechaRegistro, r.Estado, cc.NombreCentroCosto
-                FROM Requerimiento r
-                INNER JOIN CentroCosto cc ON r.IdCentroCosto = cc.Id";
+            FROM adquisiciones.Requerimiento r
+            INNER JOIN adquisiciones.CentroCosto cc ON r.IdCentroCosto = cc.Id";
 
         if ($year !== null) {
             $sql .= " WHERE r.Anio = ?";
@@ -33,7 +33,7 @@ class Requerimiento
     public static function years()
     {
         $conn = Database::connect();
-        $stmt = $conn->query("SELECT DISTINCT Anio FROM Requerimiento ORDER BY Anio DESC");
+        $stmt = $conn->query("SELECT DISTINCT Anio FROM adquisiciones.Requerimiento ORDER BY Anio DESC");
         $rows = $stmt->fetchAll();
         return array_map('intval', array_column($rows, 'Anio'));
     }
@@ -43,15 +43,15 @@ class Requerimiento
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "SELECT r.Id,
+                "SELECT r.Id,
                     r.NroPedidoCompra,
                     r.Anio,
                     r.FechaRegistro,
                     r.Estado,
                     cc.NombreCentroCosto,
                     r.IdCentroCosto
-             FROM Requerimiento r
-             INNER JOIN CentroCosto cc ON r.IdCentroCosto = cc.Id
+                 FROM adquisiciones.Requerimiento r
+                 INNER JOIN adquisiciones.CentroCosto cc ON r.IdCentroCosto = cc.Id
              WHERE r.Id = ?"
         );
         $stmt->execute([$id]);
@@ -63,7 +63,7 @@ class Requerimiento
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "INSERT INTO Requerimiento
+              "INSERT INTO adquisiciones.Requerimiento
              (IdCentroCosto, NroPedidoCompra, Anio)
              VALUES (?, ?, ?)"
         );
@@ -83,9 +83,9 @@ class Requerimiento
         // elimina items asociados antes de eliminar el requerimiento para evitar errores de FK
         try {
             $conn->beginTransaction();
-            $stmt = $conn->prepare("DELETE FROM DetalleRequerimiento WHERE IdRequerimiento = ?");
+            $stmt = $conn->prepare("DELETE FROM adquisiciones.DetalleRequerimiento WHERE IdRequerimiento = ?");
             $stmt->execute([$id]);
-            $stmt = $conn->prepare("DELETE FROM Requerimiento WHERE Id = ?");
+            $stmt = $conn->prepare("DELETE FROM adquisiciones.Requerimiento WHERE Id = ?");
             $stmt->execute([$id]);
             $conn->commit();
         } catch (Exception $e) {
@@ -99,14 +99,14 @@ class Requerimiento
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "SELECT dr.Id,
+                "SELECT dr.Id,
                     dr.CodigoSiga,
                     dr.DescripcionDetallada,
                     dr.Cantidad,
                     dr.UnidadMedida,
                     ct.NombreGenerico
-             FROM DetalleRequerimiento dr
-             LEFT JOIN CatalogoTecnologico ct
+                 FROM adquisiciones.DetalleRequerimiento dr
+                 LEFT JOIN adquisiciones.CatalogoTecnologico ct
                 ON dr.IdCatalogoTecnologico = ct.Id
              WHERE dr.IdRequerimiento = ?
              ORDER BY dr.Id DESC"
@@ -119,7 +119,7 @@ class Requerimiento
     public static function updateEstado($id, $estado)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("UPDATE Requerimiento SET Estado = ? WHERE Id = ?");
+        $stmt = $conn->prepare("UPDATE adquisiciones.Requerimiento SET Estado = ? WHERE Id = ?");
         $stmt->execute([(int)$estado, $id]);
     }
 }

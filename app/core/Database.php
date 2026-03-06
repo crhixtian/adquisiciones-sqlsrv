@@ -100,11 +100,17 @@ class Database {
 
     public static function connect() {
         if (self::$instance === null) {
+            
             $server   = "34.31.255.131";
             $database = "Adquisiciones";
             $username = "sqlserver";
             $password = "Pech206..";
-
+             /*
+            $server   = "crhixtian.database.windows.net";
+            $database = "adquisiciones-db";
+            $username = "crhixtian";
+            $password = "Pech2026....";
+*/
             $params = [
                 "Database" => $database,
                 'UID' => $username,

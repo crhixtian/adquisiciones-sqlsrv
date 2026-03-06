@@ -12,16 +12,16 @@ class TerminosReferencia
 
         if ($year === null) {
             $stmt = $conn->prepare(
-                "SELECT Id, CodigoTDR, Anio, RutaDocumento, FechaRegistro
-                 FROM TerminosReferencia
+                "SELECT Id, CodigoFT, Anio, RutaDocumento, FechaRegistro
+                 FROM adquisiciones.FichaTecnica
                  WHERE IdCatalogoTecnologico = ?
                  ORDER BY Anio DESC, FechaRegistro DESC"
             );
             $stmt->execute([$idCatalogo]);
         } else {
             $stmt = $conn->prepare(
-                "SELECT Id, CodigoTDR, Anio, RutaDocumento, FechaRegistro
-                 FROM TerminosReferencia
+                "SELECT Id, CodigoFT, Anio, RutaDocumento, FechaRegistro
+                 FROM adquisiciones.FichaTecnica
                  WHERE IdCatalogoTecnologico = ? AND Anio = ?
                  ORDER BY FechaRegistro DESC"
             );
@@ -35,16 +35,16 @@ class TerminosReferencia
     public static function create($data)
     {
         $conn = Database::connect();
-        $sql = "INSERT INTO TerminosReferencia
-                (IdCatalogoTecnologico, CodigoTDR, Anio, RutaDocumento)
-                VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO adquisiciones.FichaTecnica
+            (IdCatalogoTecnologico, CodigoFT, Anio, RutaDocumento)
+            VALUES (?, ?, ?, ?)";
         
         $stmt = $conn->prepare($sql);
         
         // Guardar solo la ruta del archivo
         $params = array(
             $data['IdCatalogoTecnologico'],
-            $data['CodigoTDR'],
+            $data['CodigoFT'],
             $data['Anio'],
             $data['RutaDocumento']
         );
@@ -56,7 +56,7 @@ class TerminosReferencia
     public static function delete($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("DELETE FROM TerminosReferencia WHERE Id = ?");
+        $stmt = $conn->prepare("DELETE FROM adquisiciones.FichaTecnica WHERE Id = ?");
         $stmt->execute([$id]);
     }
 
@@ -64,11 +64,11 @@ class TerminosReferencia
     public static function find($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare(
-            "SELECT Id, IdCatalogoTecnologico, CodigoTDR, Anio, RutaDocumento, FechaRegistro
-             FROM TerminosReferencia 
-             WHERE Id = ?"
-        );
+           $stmt = $conn->prepare(
+              "SELECT Id, IdCatalogoTecnologico, CodigoFT, Anio, RutaDocumento, FechaRegistro
+               FROM adquisiciones.FichaTecnica 
+               WHERE Id = ?"
+           );
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -77,7 +77,7 @@ class TerminosReferencia
     public static function getDocumento($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT RutaDocumento FROM TerminosReferencia WHERE Id = ?");
+        $stmt = $conn->prepare("SELECT RutaDocumento FROM adquisiciones.FichaTecnica WHERE Id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -86,7 +86,7 @@ class TerminosReferencia
     public static function findByCodigo($codigo)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT * FROM TerminosReferencia WHERE CodigoTDR = ?");
+        $stmt = $conn->prepare("SELECT * FROM adquisiciones.FichaTecnica WHERE CodigoFT = ?");
         $stmt->execute([$codigo]);
         return $stmt->fetch();
     }

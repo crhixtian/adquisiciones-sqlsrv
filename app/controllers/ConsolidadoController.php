@@ -12,7 +12,7 @@ class ConsolidadoController extends Controller
         $conn = Database::connect();
 
         // obtener años disponibles y seleccionar el más reciente por defecto
-        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM Requerimiento ORDER BY Anio DESC");
+        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM adquisiciones.Requerimiento ORDER BY Anio DESC");
         $rowsYears = $stmtYears->fetchAll();
         $years = array_map('intval', array_column($rowsYears, 'Anio'));
 
@@ -37,10 +37,10 @@ class ConsolidadoController extends Controller
                 cc.NombreCentroCosto,
                 cc.Siglas,
                 SUM(CAST(dr.Cantidad AS INT)) AS TotalEquipo
-            FROM DetalleRequerimiento dr
-            INNER JOIN Requerimiento r ON dr.IdRequerimiento = r.Id
-            INNER JOIN CentroCosto cc ON r.IdCentroCosto = cc.Id
-            INNER JOIN CatalogoTecnologico ct ON dr.IdCatalogoTecnologico = ct.Id
+            FROM adquisiciones.DetalleRequerimiento dr
+            INNER JOIN adquisiciones.Requerimiento r ON dr.IdRequerimiento = r.Id
+            INNER JOIN adquisiciones.CentroCosto cc ON r.IdCentroCosto = cc.Id
+            INNER JOIN adquisiciones.CatalogoTecnologico ct ON dr.IdCatalogoTecnologico = ct.Id
         ";
 
         if ($selectedYear !== null) {
@@ -101,7 +101,7 @@ class ConsolidadoController extends Controller
         $conn = Database::connect();
 
         // obtener años disponibles
-        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM Requerimiento ORDER BY Anio DESC");
+        $stmtYears = $conn->query("SELECT DISTINCT Anio FROM adquisiciones.Requerimiento ORDER BY Anio DESC");
         $rowsYears = $stmtYears->fetchAll();
         $years = array_map('intval', array_column($rowsYears, 'Anio'));
 
@@ -126,10 +126,10 @@ class ConsolidadoController extends Controller
                 cc.NombreCentroCosto,
                 cc.Siglas,
                 SUM(CAST(dr.Cantidad AS INT)) AS TotalEquipo
-            FROM DetalleRequerimiento dr
-            INNER JOIN Requerimiento r ON dr.IdRequerimiento = r.Id
-            INNER JOIN CentroCosto cc ON r.IdCentroCosto = cc.Id
-            INNER JOIN CatalogoTecnologico ct ON dr.IdCatalogoTecnologico = ct.Id
+            FROM adquisiciones.DetalleRequerimiento dr
+            INNER JOIN adquisiciones.Requerimiento r ON dr.IdRequerimiento = r.Id
+            INNER JOIN adquisiciones.CentroCosto cc ON r.IdCentroCosto = cc.Id
+            INNER JOIN adquisiciones.CatalogoTecnologico ct ON dr.IdCatalogoTecnologico = ct.Id
         ";
 
         if ($selectedYear !== null) {

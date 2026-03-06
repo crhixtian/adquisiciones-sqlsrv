@@ -19,7 +19,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Cantidad</label>
-                    <input type="number" step="0.01" name="Cantidad" class="form-control" value="<?= htmlspecialchars($detalle['Cantidad']) ?>" required>
+                    <input type="number" step="1" min="1" name="Cantidad" class="form-control" value="<?= htmlspecialchars($detalle['Cantidad']) ?>" required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Unidad de Medida</label>
@@ -31,14 +31,14 @@
                         <option value=""></option>
                         <?php foreach ($catalogos as $cat): ?>
                             <option value="<?= $cat['Id'] ?>" <?= $detalle['IdCatalogoTecnologico'] == $cat['Id'] ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($cat['CategoriaTecnologica'] . ' - ' . $cat['NombreGenerico']) ?>
+                                <?= htmlspecialchars($cat['Codigo'] . ' - ' . $cat['NombreGenerico']) ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
             </div>
             <div class="card-footer text-end">
-                <a href="index.php?controller=hoja&action=show&id=<?= $detalle['IdRequerimiento'] ?>" class="btn btn-secondary">Cancelar</a>
+                <a href="index.php?controller=requerimiento&action=show&id=<?= $detalle['IdRequerimiento'] ?>" class="btn btn-secondary">Cancelar</a>
                 <button type="submit" class="btn btn-primary">Actualizar Ítem</button>
             </div>
         </form>

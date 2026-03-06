@@ -10,9 +10,9 @@ class DetalleRequerimiento
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "SELECT dr.*, ct.NombreGenerico
-             FROM DetalleRequerimiento dr
-             LEFT JOIN CatalogoTecnologico ct ON dr.IdCatalogoTecnologico = ct.Id
+              "SELECT dr.*, ct.NombreGenerico
+               FROM adquisiciones.DetalleRequerimiento dr
+               LEFT JOIN adquisiciones.CatalogoTecnologico ct ON dr.IdCatalogoTecnologico = ct.Id
              WHERE dr.IdRequerimiento = ?
              ORDER BY dr.Id DESC"
         );
@@ -24,7 +24,7 @@ class DetalleRequerimiento
     public static function find($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT * FROM DetalleRequerimiento WHERE Id = ?");
+        $stmt = $conn->prepare("SELECT * FROM adquisiciones.DetalleRequerimiento WHERE Id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -34,7 +34,7 @@ class DetalleRequerimiento
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "INSERT INTO DetalleRequerimiento
+              "INSERT INTO adquisiciones.DetalleRequerimiento
              (IdRequerimiento, IdCatalogoTecnologico, CodigoSiga, DescripcionDetallada, Cantidad, UnidadMedida)
              VALUES (?, ?, ?, ?, ?, ?)"
         );
@@ -53,7 +53,7 @@ class DetalleRequerimiento
     {
         $conn = Database::connect();
         $stmt = $conn->prepare(
-            "UPDATE DetalleRequerimiento
+            "UPDATE adquisiciones.DetalleRequerimiento
              SET CodigoSiga = ?,
                  DescripcionDetallada = ?,
                  Cantidad = ?,
@@ -75,7 +75,7 @@ class DetalleRequerimiento
     public static function delete($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("DELETE FROM DetalleRequerimiento WHERE Id = ?");
+        $stmt = $conn->prepare("DELETE FROM adquisiciones.DetalleRequerimiento WHERE Id = ?");
         $stmt->execute([$id]);
     }
 
@@ -85,13 +85,13 @@ class DetalleRequerimiento
         $conn = Database::connect();
         if ($excludeId) {
             $stmt = $conn->prepare(
-                "SELECT COUNT(*) as total FROM DetalleRequerimiento
+                 "SELECT COUNT(*) as total FROM adquisiciones.DetalleRequerimiento
                  WHERE IdRequerimiento = ? AND CodigoSiga = ? AND Id <> ?"
             );
             $stmt->execute([$idRequerimiento, $codigo, $excludeId]);
         } else {
             $stmt = $conn->prepare(
-                "SELECT COUNT(*) as total FROM DetalleRequerimiento
+                "SELECT COUNT(*) as total FROM adquisiciones.DetalleRequerimiento
                  WHERE IdRequerimiento = ? AND CodigoSiga = ?"
             );
             $stmt->execute([$idRequerimiento, $codigo]);

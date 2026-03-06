@@ -10,13 +10,13 @@ class CatalogoTecnologico
     {
         $conn = Database::connect();
         $stmt = $conn->query(
-            "SELECT Id, CategoriaTecnologica, NombreGenerico
-             FROM CatalogoTecnologico
+            "SELECT Id, Codigo, NombreGenerico
+             FROM adquisiciones.CatalogoTecnologico
              WHERE Activo = 1
              ORDER BY
-                CASE WHEN CategoriaTecnologica LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
-                TRY_CAST(SUBSTRING(CategoriaTecnologica, 2, LEN(CategoriaTecnologica)) AS INT),
-                CategoriaTecnologica,
+                CASE WHEN Codigo LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
+                TRY_CAST(SUBSTRING(Codigo, 2, LEN(Codigo)) AS INT),
+                Codigo,
                 NombreGenerico"
         );
         return $stmt->fetchAll();
@@ -31,7 +31,7 @@ class CatalogoTecnologico
                 SELECT DISTINCT 
                     dr.IdCatalogoTecnologico,
                     dr.CodigoSiga
-                FROM DetalleRequerimiento dr
+                FROM adquisiciones.DetalleRequerimiento dr
             ),
             CodigosAgrupados AS (
                 SELECT 
@@ -44,8 +44,8 @@ class CatalogoTecnologico
                 ct.Id AS IdCatalogo,
                 ISNULL(ca.CodigoSiga, '') AS CodigoSiga,
                 ct.NombreGenerico,
-                ct.CategoriaTecnologica,
-                (SELECT COUNT(*) FROM FichaTecnica ft2
+                ct.Codigo,
+                (SELECT COUNT(*) FROM adquisiciones.FichaTecnicaReferencia ft2
                  WHERE ft2.IdCatalogoTecnologico = ct.Id";
 
         if ($year) {
@@ -53,17 +53,17 @@ class CatalogoTecnologico
         }
 
         $sql .= ") AS TotalEstudios,
-                (SELECT COUNT(*) FROM TerminosReferencia tr2
-                 WHERE tr2.IdCatalogoTecnologico = ct.Id";
+            (SELECT COUNT(*) FROM adquisiciones.FichaTecnica tr2
+             WHERE tr2.IdCatalogoTecnologico = ct.Id";
 
         if ($year) {
             $sql .= " AND tr2.Anio = ?";
         }
 
         $sql .= ") AS TotalTDR,
-                CASE 
-                    WHEN (SELECT COUNT(*) FROM TerminosReferencia tr3
-                          WHERE tr3.IdCatalogoTecnologico = ct.Id";
+            CASE 
+                WHEN (SELECT COUNT(*) FROM adquisiciones.FichaTecnica tr3
+                  WHERE tr3.IdCatalogoTecnologico = ct.Id";
 
         if ($year) {
             $sql .= " AND tr3.Anio = ?";
@@ -72,11 +72,11 @@ class CatalogoTecnologico
         $sql .= ") > 0 THEN 'Completo'
                     ELSE 'Incompleto'
                 END AS Estado
-            FROM CatalogoTecnologico ct
+            FROM adquisiciones.CatalogoTecnologico ct
             LEFT JOIN CodigosAgrupados ca ON ct.Id = ca.IdCatalogoTecnologico
             WHERE EXISTS (
-                SELECT 1 FROM DetalleRequerimiento dr
-                INNER JOIN Requerimiento r ON dr.IdRequerimiento = r.Id
+                SELECT 1 FROM adquisiciones.DetalleRequerimiento dr
+                INNER JOIN adquisiciones.Requerimiento r ON dr.IdRequerimiento = r.Id
                 WHERE dr.IdCatalogoTecnologico = ct.Id";
 
         if ($year) {
@@ -86,9 +86,9 @@ class CatalogoTecnologico
         $sql .= "
             )
             ORDER BY
-                CASE WHEN ct.CategoriaTecnologica LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
-                TRY_CAST(SUBSTRING(ct.CategoriaTecnologica, 2, LEN(ct.CategoriaTecnologica)) AS INT),
-                ct.CategoriaTecnologica,
+                CASE WHEN ct.Codigo LIKE 'T[0-9]%' THEN 0 ELSE 1 END,
+                TRY_CAST(SUBSTRING(ct.Codigo, 2, LEN(ct.Codigo)) AS INT),
+                ct.Codigo,
                 ct.NombreGenerico";
 
         $stmt = $conn->prepare($sql);
@@ -105,7 +105,7 @@ class CatalogoTecnologico
     public static function find($id)
     {
         $conn = Database::connect();
-        $stmt = $conn->prepare("SELECT Id, CategoriaTecnologica, NombreGenerico FROM CatalogoTecnologico WHERE Id = ?");
+        $stmt = $conn->prepare("SELECT Id, Codigo, NombreGenerico FROM adquisiciones.CatalogoTecnologico WHERE Id = ?");
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
@@ -114,15 +114,15 @@ class CatalogoTecnologico
     public static function pedidosCompraByCatalogo($idCatalogo, $year = null)
     {
         $conn = Database::connect();
-        $sql = "SELECT DISTINCT
+          $sql = "SELECT DISTINCT
                     r.Id,
                     r.NroPedidoCompra,
                     r.Anio,
                     cc.NombreCentroCosto
-             FROM DetalleRequerimiento dr
-             INNER JOIN Requerimiento r
+                 FROM adquisiciones.DetalleRequerimiento dr
+                 INNER JOIN adquisiciones.Requerimiento r
                 ON dr.IdRequerimiento = r.Id
-             INNER JOIN CentroCosto cc
+                 INNER JOIN adquisiciones.CentroCosto cc
                 ON r.IdCentroCosto = cc.Id
              WHERE dr.IdCatalogoTecnologico = ?";
 
@@ -145,8 +145,8 @@ class CatalogoTecnologico
         $conn = Database::connect();
         $stmt = $conn->prepare(
             "SELECT DISTINCT r.Anio
-             FROM DetalleRequerimiento dr
-             INNER JOIN Requerimiento r
+             FROM adquisiciones.DetalleRequerimiento dr
+             INNER JOIN adquisiciones.Requerimiento r
                 ON dr.IdRequerimiento = r.Id
              WHERE dr.IdCatalogoTecnologico = ?
              ORDER BY r.Anio DESC"

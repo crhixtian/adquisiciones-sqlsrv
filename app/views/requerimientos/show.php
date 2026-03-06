@@ -46,7 +46,7 @@ $estadoClase = $estadoActual === 1 ? 'bg-green text-white' : 'bg-yellow text-dar
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Cantidad</label>
-                            <input type="number" step="0.01" name="Cantidad" class="form-control" required>
+                            <input type="number" step="1" min="1" name="Cantidad" class="form-control" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Unidad de Medida</label>
@@ -57,7 +57,7 @@ $estadoClase = $estadoActual === 1 ? 'bg-green text-white' : 'bg-yellow text-dar
                             <select name="IdCatalogoTecnologico" class="form-select">
                                 <option value=""></option>
                                 <?php foreach ($catalogos as $cat): ?>
-                                    <option value="<?= $cat['Id'] ?>"><?= htmlspecialchars($cat['CategoriaTecnologica'] . ' - ' . $cat['NombreGenerico']) ?></option>
+                                    <option value="<?= $cat['Id'] ?>"><?= htmlspecialchars($cat['Codigo'] . ' - ' . $cat['NombreGenerico']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
