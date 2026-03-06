@@ -40,7 +40,7 @@
                                 <?php if ($row['Estado'] === 'Completo'): ?>
                                     <span class="badge bg-success text-white">Completo</span>
                                 <?php else: ?>
-                                    <span class="badge bg-red text-white">Incompleto</span>
+                                    <span class="badge bg-yellow text-white">Pendiente</span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-end">

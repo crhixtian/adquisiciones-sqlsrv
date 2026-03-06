@@ -17,7 +17,9 @@
                 <!-- navigation menu -->
                 <nav class="navbar navbar-expand-md navbar-light bg-white mb-4">
                     <div class="container-fluid">
-                        <a class="navbar-brand" href="index.php">PECH</a>
+                        <a class="navbar-brand" href="index.php">
+                            <img src="https://app.chavimochic.gob.pe/Webservice/contador/LogoChavimochicFINAL.png" alt="Chavimochic" style="height:40px; width:auto; display:block;">
+                        </a>
                         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
                             <span class="navbar-toggler-icon"></span>
                         </button>
